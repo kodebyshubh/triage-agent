@@ -5,13 +5,9 @@ guardrail, an Orchestrator agent that genuinely delegates to Classifier /
 Retriever+Responder / Escalator tools via LangChain tool-calling, then an output
 guardrail, and returns a structured `TriageResponse` with a full agent trace.
 
-See [TriageForge_PRD.md](TriageForge_PRD.md) for the full spec and
-[TriageForge_BUILD_PROMPTS.md](TriageForge_BUILD_PROMPTS.md) for the build plan
-this was implemented against.
-
 Built as a portfolio project demonstrating real multi-agent delegation, a guardrail
 layer, and Pydantic-enforced structured output at every agent boundary - explicitly
-scoped as demo-grade (PRD section 3), not production-grade.
+scoped as demo-grade, not production-grade.
 
 ## Setup
 
@@ -72,7 +68,7 @@ Fix attempts, in order:
 Not pursued further: per-call-site model creep or continued prompt engineering
 on a small/fast model has diminishing returns. 50%, quantified and root-caused,
 is a stronger result than either an unexplained 100% or unbounded time spent
-chasing it - and matches the PRD's explicit demo-grade framing (section 3).
+chasing it, given this is explicitly a demo-grade project, not production-grade.
 
 ### 2. Transport-layer glitch (malformed tool-call generation)
 
