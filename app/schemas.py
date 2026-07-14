@@ -1,0 +1,61 @@
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+
+class TicketInput(BaseModel):
+    ticket_id: str
+    user_message: str
+    session_id: str
+
+
+class GuardrailResult(BaseModel):
+    is_safe: bool
+    redacted_message: str
+    flags: list[str]
+
+
+class ClassificationResult(BaseModel):
+    category: Literal["billing", "technical", "account", "other"]
+    urgency: int = Field(ge=1, le=5)
+    sentiment: Literal["neutral", "frustrated", "urgent"]
+
+
+class RetrievalResult(BaseModel):
+    chunks: list[str]
+    sources: list[str]
+    confidence: float = Field(ge=0.0, le=1.0)
+
+
+class ResolutionDraft(BaseModel):
+    draft_text: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    citations: list[str]
+
+
+class EscalationSummary(BaseModel):
+    summary: str
+    suggested_priority: Literal["low", "medium", "high"]
+    flagged_reason: str
+
+
+class AgentTraceStep(BaseModel):
+    agent_name: str
+    input: dict
+    output: dict
+    timestamp: str
+
+
+class TriageResponse(BaseModel):
+    # Three distinct reasons a ticket can end up not-auto-resolved - keep them
+    # separate in any eval/metrics, conflating any pair hides a real finding:
+    # - "escalated": the agent genuinely judged the ticket urgent/low-confidence
+    # - "escalated_due_to_error": a downstream LLM call exhausted its
+    #   transport-failure retries (malformed generation), not a routing decision
+    # - "escalated_output_blocked": the output guardrail rejected the drafted
+    #   reply (true or false positive), not a routing decision either
+    final_action: Literal[
+        "auto_resolved", "escalated", "escalated_due_to_error", "escalated_output_blocked"
+    ]
+    response: ResolutionDraft | EscalationSummary
+    trace: list[AgentTraceStep]
