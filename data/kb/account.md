@@ -5,11 +5,11 @@ Go to Account > Profile > Email, enter the new address, and confirm via the veri
 link sent to it. Your old email remains active until the new one is verified.
 
 ## How do I delete my account?
-Go to Account > Settings > "Delete Account". This is permanent after a 14-day grace period,
+Go to Account > Settings > 'Delete Account'. This is permanent after a 14-day grace period,
 during which you can cancel the deletion by logging back in.
 
 ## I forgot my password
-Click "Forgot Password" on the login screen and enter your registered email. A reset link
+Click 'Forgot Password' on the login screen and enter your registered email. A reset link
 is valid for 1 hour. If it expires, request a new one.
 
 ## Can I merge two accounts?

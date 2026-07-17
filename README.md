@@ -70,6 +70,13 @@ on a small/fast model has diminishing returns. 50%, quantified and root-caused,
 is a stronger result than either an unexplained 100% or unbounded time spent
 chasing it, given this is explicitly a demo-grade project, not production-grade.
 
+One bounded, time-boxed follow-up experiment: tried `gpt-oss-20b` for `classify()`
+alone (isolated, not a global swap) on the 3 tickets that showed inflated
+`urgency: 5`. Mixed result, not adopted - 1/3 improved (urgency dropped from 5 to
+3, below the escalate threshold), 1/3 unchanged, and 1/3 hit the same
+transport-layer glitch (below) in a new call site. Kept `llama-3.1-8b-instant`
+for `classify()`, as originally.
+
 ### 2. Transport-layer glitch (malformed tool-call generation)
 
 Groq's models occasionally emit malformed function-call syntax
@@ -86,6 +93,14 @@ returns a distinct `final_action: "escalated_due_to_error"` rather than crashing
 with a 500 or being counted as a routing win/loss. Still occurs (2/8 in the final
 clean eval run) but is now always visible and never silently contaminates the
 routing-accuracy number.
+
+One hypothesis tested and disproven: the KB source markdown originally contained
+literal double-quotes (e.g. `"Request Refund"`), which could plausibly cause the
+model to mis-escape nested quotes when generating structured JSON output. Stripped
+all quotes from `data/kb/*.md`, re-ingested, and reran a query that had failed 3/3
+times immediately before the change - it failed identically 3/3 times after.
+Quote content in the KB is not the trigger; the root cause remains unidentified
+generation-format flakiness in the underlying model.
 
 ### 3. Output-guardrail false positive
 
