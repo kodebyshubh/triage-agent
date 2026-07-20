@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 from groq import BadRequestError
 from langchain.agents import create_agent
-from langchain_core.tools import Tool
+from langchain_core.tools import BaseTool, Tool
 
 from app.agents.classifier import classify
 from app.agents.escalator import escalate
@@ -48,6 +48,12 @@ Rules you must follow exactly:
 5. Never call `escalate` before you have seen classify's result.
 6. Stop as soon as you reach a resolution or escalation - don't call more tools than
    necessary.
+7. If the ticket references a specific account or account ID, call
+   check_account_status before calling retrieve_and_draft or escalate.
+   check_account_status is NEVER a terminal action by itself - it only gathers
+   context. You MUST still call retrieve_and_draft or escalate afterward, in the
+   same way you would have without it. Never stop right after
+   check_account_status.
 """
 
 
@@ -123,6 +129,42 @@ def _build_tools(ticket: TicketInput, trace: list[AgentTraceStep]) -> list[Tool]
     return [classify_tool, retrieve_and_draft_tool, escalate_tool]
 
 
+def _build_mcp_tools(mcp_tools: list[BaseTool], trace: list[AgentTraceStep]) -> list[Tool]:
+    """Wraps the check_account_status MCP tool with the same trace-logging
+    pattern as the 3 in-process tools above (same AgentTraceStep fields, same
+    _now() timestamp, appended to the same shared trace list). Necessarily
+    async, unlike the sync tools above - MCP tool execution requires an
+    active client session (see langchain_mcp_adapters), which this codebase
+    doesn't otherwise use."""
+    raw_tool = next((t for t in mcp_tools if t.name == "check_account_status"), None)
+    if raw_tool is None:
+        return []
+
+    async def _check_account_status_fn(account_id: str) -> str:
+        result = await raw_tool.ainvoke({"account_id": account_id})
+        trace.append(
+            AgentTraceStep(
+                agent_name="AccountLookup",
+                input={"account_id": account_id},
+                output=result if isinstance(result, dict) else {"result": result},
+                timestamp=_now(),
+            )
+        )
+        return str(result)
+
+    check_account_status_tool = Tool.from_function(
+        func=None,
+        coroutine=_check_account_status_fn,
+        name="check_account_status",
+        description=(
+            "Look up an account's plan tier, standing, and open disputes via the "
+            "MCP-connected CRM/billing tool. Call this before retrieve_and_draft or "
+            "escalate if the ticket references a specific account or account ID."
+        ),
+    )
+    return [check_account_status_tool]
+
+
 def _history_to_message(history: list[HistoryTurn]) -> str | None:
     if not history:
         return None
@@ -140,8 +182,10 @@ def _history_to_message(history: list[HistoryTurn]) -> str | None:
 _MAX_TRANSPORT_RETRIES = 2  # retries a malformed tool-call generation, never a routing decision
 
 
-def run_orchestrator(
-    ticket: TicketInput, history: list[HistoryTurn] | None = None
+async def run_orchestrator(
+    ticket: TicketInput,
+    history: list[HistoryTurn] | None = None,
+    mcp_tools: list[BaseTool] | None = None,
 ) -> TriageResponse:
     messages = []
     context_message = _history_to_message(history or [])
@@ -153,12 +197,12 @@ def run_orchestrator(
     last_transport_error: Exception | None = None
     for _attempt in range(_MAX_TRANSPORT_RETRIES + 1):
         trace = []
-        tools = _build_tools(ticket, trace)
+        tools = _build_tools(ticket, trace) + _build_mcp_tools(mcp_tools or [], trace)
         agent = create_agent(
             get_chat_model(model=_ORCHESTRATOR_MODEL), tools=tools, system_prompt=_SYSTEM_PROMPT
         )
         try:
-            agent.invoke({"messages": messages})
+            await agent.ainvoke({"messages": messages})
             last_transport_error = None
             break
         except BadRequestError as e:
@@ -221,6 +265,23 @@ def run_orchestrator(
         return TriageResponse(
             final_action="auto_resolved",
             response=ResolutionDraft(**last_step.output["draft"]),
+            trace=trace,
+        )
+    if last_step.agent_name == "AccountLookup":
+        # A recognized, non-terminal follow-through failure: the model called
+        # check_account_status and stopped instead of continuing to
+        # retrieve_and_draft or escalate. Distinct from the generic RuntimeError
+        # below, which is reserved for genuinely unrecognized trace shapes.
+        return TriageResponse(
+            final_action="escalated_incomplete_lookup",
+            response=EscalationSummary(
+                summary="The agent looked up account information but did not "
+                "reach a resolution or escalation, and has been routed to a "
+                "human.",
+                suggested_priority="medium",
+                flagged_reason="Trace ended after check_account_status without "
+                "a terminal action.",
+            ),
             trace=trace,
         )
 

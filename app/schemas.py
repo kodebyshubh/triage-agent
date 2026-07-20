@@ -47,15 +47,22 @@ class AgentTraceStep(BaseModel):
 
 
 class TriageResponse(BaseModel):
-    # Three distinct reasons a ticket can end up not-auto-resolved - keep them
+    # Four distinct reasons a ticket can end up not-auto-resolved - keep them
     # separate in any eval/metrics, conflating any pair hides a real finding:
     # - "escalated": the agent genuinely judged the ticket urgent/low-confidence
     # - "escalated_due_to_error": a downstream LLM call exhausted its
     #   transport-failure retries (malformed generation), not a routing decision
     # - "escalated_output_blocked": the output guardrail rejected the drafted
     #   reply (true or false positive), not a routing decision either
+    # - "escalated_incomplete_lookup": the agent called check_account_status
+    #   and stopped without reaching a resolution or escalation - a model
+    #   follow-through failure, not any of the above
     final_action: Literal[
-        "auto_resolved", "escalated", "escalated_due_to_error", "escalated_output_blocked"
+        "auto_resolved",
+        "escalated",
+        "escalated_due_to_error",
+        "escalated_output_blocked",
+        "escalated_incomplete_lookup",
     ]
     response: ResolutionDraft | EscalationSummary
     trace: list[AgentTraceStep]

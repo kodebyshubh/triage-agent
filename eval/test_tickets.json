@@ -110,5 +110,23 @@
     "expected_category": "other",
     "expected_action": "escalated",
     "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "mcp_account_lookup_expected",
+    "session_id": "eval-mcp_account_lookup_expected",
+    "user_message": "Can you check the status of account acc-1003? I want to know my plan tier before upgrading.",
+    "expected_category": "account",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": [],
+    "expect_account_lookup": true
+  },
+  {
+    "ticket_id": "mcp_account_lookup_not_expected",
+    "session_id": "eval-mcp_account_lookup_not_expected",
+    "user_message": "What file formats do you support for uploads?",
+    "expected_category": "other",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": [],
+    "expect_account_lookup": false
   }
 ]

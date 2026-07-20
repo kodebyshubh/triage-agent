@@ -7,6 +7,7 @@ const ACTION_STYLES = {
   escalated: { label: 'Escalated', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
   escalated_due_to_error: { label: 'Escalated (transport error)', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
   escalated_output_blocked: { label: 'Escalated (output blocked)', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
+  escalated_incomplete_lookup: { label: 'Escalated (incomplete lookup)', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 }
 
 function TraceStep({ step }) {
