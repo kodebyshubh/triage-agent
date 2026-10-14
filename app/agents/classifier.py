@@ -8,8 +8,10 @@ _SYSTEM_PROMPT = (
 
 
 def classify(ticket: TicketInput) -> ClassificationResult:
-    llm = get_chat_model()
-    structured_llm = llm.with_structured_output(ClassificationResult)
+    llm = get_chat_model(reasoning_effort="low")
+    structured_llm = llm.with_structured_output(
+        ClassificationResult, method="json_schema", strict=True
+    )
     return invoke_structured_with_retry(
         structured_llm,
         [

@@ -9,8 +9,10 @@ _SYSTEM_PROMPT = (
 
 
 def escalate(ticket: TicketInput, reason: str) -> EscalationSummary:
-    llm = get_chat_model()
-    structured_llm = llm.with_structured_output(EscalationSummary)
+    llm = get_chat_model(reasoning_effort="low")
+    structured_llm = llm.with_structured_output(
+        EscalationSummary, method="json_schema", strict=True
+    )
 
     human_prompt = f"Ticket message: {ticket.user_message}\n\nEscalation reason: {reason}"
 

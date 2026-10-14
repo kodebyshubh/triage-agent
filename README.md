@@ -131,6 +131,11 @@ alone (isolated, not a global swap) on the 3 tickets that showed inflated
 transport-layer glitch (below) in a new call site. Kept `llama-3.1-8b-instant`
 for `classify()`, as originally.
 
+**Update:** Groq has since decommissioned `llama-3.1-8b-instant`, so the default
+model for `classify`/`draft_response`/`escalate` is now `openai/gpt-oss-20b` too
+(with `reasoning_effort="low"` and strict `json_schema` structured output). The
+numbers above were measured on the old Llama setup and have not been re-run.
+
 ### 2. Transport-layer glitch (malformed tool-call generation)
 
 Groq's models occasionally emit malformed function-call syntax

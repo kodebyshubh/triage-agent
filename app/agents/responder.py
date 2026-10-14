@@ -10,8 +10,10 @@ _SYSTEM_PROMPT = (
 
 
 def draft_response(ticket: TicketInput, retrieval: RetrievalResult) -> ResolutionDraft:
-    llm = get_chat_model()
-    structured_llm = llm.with_structured_output(ResolutionDraft)
+    llm = get_chat_model(reasoning_effort="low")
+    structured_llm = llm.with_structured_output(
+        ResolutionDraft, method="json_schema", strict=True
+    )
 
     context = "\n\n".join(
         f"[Source: {src}]\n{chunk}"

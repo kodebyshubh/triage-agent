@@ -28,9 +28,10 @@ from app.schemas import (
 HistoryTurn = tuple[TicketInput, TriageResponse]
 
 # gpt-oss-20b proved reliable at the tool-calling loop itself in isolated testing,
-# where llama-3.1-8b-instant systematically over-escalated even after prompt fixes.
-# Scoped to this call only - classify/draft/escalate keep using the default model,
-# which is proven reliable for structured output.
+# where the previous default (llama-3.1-8b-instant, since decommissioned by Groq)
+# systematically over-escalated even after prompt fixes. The default model is now
+# also gpt-oss-20b; this stays explicit so the orchestrator keeps the model
+# default reasoning effort while classify/draft/escalate run at "low".
 _ORCHESTRATOR_MODEL = "openai/gpt-oss-20b"
 
 _SYSTEM_PROMPT = """You are the Orchestrator for a support ticket triage system.

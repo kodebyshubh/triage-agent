@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-GROQ_MODEL = "llama-3.1-8b-instant"
+GROQ_MODEL = "openai/gpt-oss-20b"
 GEMINI_MODEL = "gemini-1.5-flash"
 _MAX_TRANSPORT_RETRIES = 2
 
@@ -15,13 +15,16 @@ class TransportFailure(RuntimeError):
     treat this distinctly from a valid-but-disagreeable model response."""
 
 
-def get_chat_model(temperature: float = 0, model: str | None = None):
+def get_chat_model(
+    temperature: float = 0, model: str | None = None, reasoning_effort: str | None = None
+):
     """Groq primary, Gemini fallback (selected once per call, not retried mid-call).
 
     `model` overrides the default Groq model for this call only - used by the
     orchestrator to run a different model for its tool-calling loop than the one
     used for structured-output calls (classify/draft/escalate), without affecting
-    those elsewhere.
+    those elsewhere. `reasoning_effort` is passed to Groq's gpt-oss reasoning
+    models ("low"/"medium"/"high"); None keeps the model default.
     """
     groq_key = os.getenv("GROQ_API_KEY")
     gemini_key = os.getenv("GEMINI_API_KEY")
@@ -34,7 +37,11 @@ def get_chat_model(temperature: float = 0, model: str | None = None):
     if groq_key:
         from langchain_groq import ChatGroq
 
-        return ChatGroq(model=model or GROQ_MODEL, temperature=temperature)
+        return ChatGroq(
+            model=model or GROQ_MODEL,
+            temperature=temperature,
+            reasoning_effort=reasoning_effort,
+        )
 
     from langchain_google_genai import ChatGoogleGenerativeAI
 
