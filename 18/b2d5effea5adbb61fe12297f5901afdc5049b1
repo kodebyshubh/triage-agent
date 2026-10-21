@@ -1,26 +1,11 @@
 eval/run_eval.py
-  s_15a9959e77d786::t_4b77dc393c90a1 328
+  s_15a9959e77d786::t_4b77dc393c90a1 332
 ---
 {
   "schema_version": "authorship/3.0.0",
   "autter_version": "2.2.0",
-  "base_commit_sha": "d7bded848d027c917caad89a22bdd881de369554",
-  "branch": "retry-scope",
-  "prompts": {
-    "s_15a9959e77d786": {
-      "agent_id": {
-        "tool": "claude",
-        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
-        "model": "claude-opus-5-5"
-      },
-      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
-      "messages_url": "cas:5bfe52ad908fb8f03c402a21b45628bc723e86443d45b77452f212ed6ba23f27",
-      "total_additions": 1,
-      "total_deletions": 2,
-      "accepted_lines": 1,
-      "overriden_lines": 0
-    }
-  },
+  "base_commit_sha": "18b2d5effea5adbb61fe12297f5901afdc5049b1",
+  "prompts": {},
   "sessions": {
     "s_15a9959e77d786": {
       "agent_id": {
