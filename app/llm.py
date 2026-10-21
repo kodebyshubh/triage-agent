@@ -1,3 +1,4 @@
+import itertools
 import os
 
 from dotenv import load_dotenv
@@ -7,6 +8,25 @@ load_dotenv()
 GROQ_MODEL = "openai/gpt-oss-20b"
 GEMINI_MODEL = "gemini-1.5-flash"
 _MAX_TRANSPORT_RETRIES = 2
+
+
+_key_counter = itertools.count()
+
+
+def groq_keys() -> list[str]:
+    """GROQ_API_KEY plus optional GROQ_API_KEY_1..10. Empty/whitespace slots are
+    skipped and duplicates dropped."""
+    raw = [os.getenv("GROQ_API_KEY", "")] + [os.getenv(f"GROQ_API_KEY_{i}", "") for i in range(1, 11)]
+    return list(dict.fromkeys(k.strip() for k in raw if k and k.strip()))
+
+
+def next_groq_key() -> str | None:
+    """Round-robin across the key pool so per-key rate limits (tokens/min,
+    requests/day) are spread out. Infra only: no effect on model behavior."""
+    keys = groq_keys()
+    if not keys:
+        return None
+    return keys[next(_key_counter) % len(keys)]
 
 
 class TransportFailure(RuntimeError):
@@ -26,7 +46,7 @@ def get_chat_model(
     those elsewhere. `reasoning_effort` is passed to Groq's gpt-oss reasoning
     models ("low"/"medium"/"high"); None keeps the model default.
     """
-    groq_key = os.getenv("GROQ_API_KEY")
+    groq_key = next_groq_key()
     gemini_key = os.getenv("GEMINI_API_KEY")
 
     if not groq_key and not gemini_key:
@@ -38,6 +58,7 @@ def get_chat_model(
         from langchain_groq import ChatGroq
 
         return ChatGroq(
+            api_key=groq_key,
             model=model or GROQ_MODEL,
             temperature=temperature,
             reasoning_effort=reasoning_effort,
@@ -73,7 +94,7 @@ def invoke_structured_with_retry(structured_llm, messages):
 async def ainvoke_llm(prompt: str, temperature: float = 0) -> str:
     """Plain-text completion. Falls back to Gemini if Groq raises at call time
     and a Gemini key is also configured."""
-    groq_key = os.getenv("GROQ_API_KEY")
+    groq_key = groq_keys()
     gemini_key = os.getenv("GEMINI_API_KEY")
 
     llm = get_chat_model(temperature)
