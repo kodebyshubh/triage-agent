@@ -164,6 +164,11 @@ def run_eval(tickets: list[dict], run: int = 1, workers: int = 4) -> list[dict]:
 def summarize(rows: list[dict]) -> dict:
     total = len(rows)
     lookup_rows = [r for r in rows if r["lookup_match"] is not None]
+    decided = [
+        r for r in rows
+        if not (r["is_http_error"] or r["is_transport_error"] or r["is_output_blocked"]
+                or r["is_incomplete_lookup"])
+    ]
     return {
         "routing_match": sum(r["action_match"] for r in rows) / total,
         "guardrail_match": sum(r["guardrail_match"] for r in rows) / total,
@@ -175,6 +180,12 @@ def summarize(rows: list[dict]) -> dict:
             sum(r["lookup_match"] for r in lookup_rows) / len(lookup_rows) if lookup_rows else None
         ),
         "category_match": sum(r["expected_category"] == r["actual_category"] for r in rows) / total,
+        # Additive: routing match over tickets that reached a routing decision only
+        # (drops transport/output-blocked/incomplete-lookup/http-error rows from the
+        # denominator), so runs with different error rates compare fairly.
+        "routing_match_decided": (
+            sum(r["action_match"] for r in decided) / len(decided) if decided else None
+        ),
     }
 
 
@@ -265,7 +276,7 @@ def print_aggregate(runs: list[list[dict]]) -> None:
     for i, first in enumerate(runs[0]):
         per_run = [run[i] for run in runs]
         actions = "/".join(_ABBREV.get(r["actual_action"], r["actual_action"]) for r in per_run)
-        urg = "/".join(str(r["actual_urgency"]) if r["actual_urgency"] else "-" for r in per_run)
+        urg = "/".join(str(r.get("actual_urgency") or "-") for r in per_run)
         ok = sum(r["action_match"] for r in per_run)
         exp = _ABBREV.get(first["expected_action"], first["expected_action"])
         print(f"{first['ticket_id']:<34}{exp:<6}{actions:<30}{urg:<12}{ok}/{n_runs}")
@@ -279,10 +290,11 @@ def print_aggregate(runs: list[list[dict]]) -> None:
                 print(f"  {key:<22}{_spread(vals)}")
 
     _metrics_block("Per-run metrics, all tickets", runs)
-    _metrics_block(
-        f"Per-run metrics, original {ORIGINAL_TICKET_COUNT} tickets only",
-        [rows[:ORIGINAL_TICKET_COUNT] for rows in runs],
-    )
+    if runs[0] and runs[0][0]["ticket_id"] == "billing_refund":  # the main test set
+        _metrics_block(
+            f"Per-run metrics, original {ORIGINAL_TICKET_COUNT} tickets only",
+            [rows[:ORIGINAL_TICKET_COUNT] for rows in runs],
+        )
 
     pooled = [r for rows in runs for r in rows]
     n = len(pooled)
@@ -315,20 +327,32 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runs", type=int, default=3)
     parser.add_argument("--workers", type=int, default=4)
-    parser.add_argument("--json", type=Path, help="also dump raw per-run rows here")
+    parser.add_argument("--json", type=Path, help="dump raw per-run rows here (after every run)")
+    parser.add_argument("--first-run", type=int, default=1,
+                        help="number of the first run (session ids use it), to resume a set")
+    parser.add_argument("--tickets", type=Path, default=TICKETS_PATH)
+    parser.add_argument("--merge", type=Path, nargs="+",
+                        help="no requests: print the aggregate over runs saved in these JSON files")
     args = parser.parse_args()
 
-    tickets = json.loads(TICKETS_PATH.read_text())
+    if args.merge:
+        runs = [run for path in args.merge for run in json.loads(path.read_text())]
+        print(f"Merged {len(runs)} run(s) from: {', '.join(str(p) for p in args.merge)}")
+        print_aggregate(runs)
+        return
+
+    tickets = json.loads(args.tickets.read_text())
     runs = []
-    for run in range(1, args.runs + 1):
+    last = args.first_run + args.runs - 1
+    for run in range(args.first_run, last + 1):
         rows = run_eval(tickets, run=run, workers=args.workers)
-        print(f"\n=== Run {run}/{args.runs} ===")
+        print(f"\n=== Run {run}/{last} ===", flush=True)
         print_table(rows)
         runs.append(rows)
+        if args.json:  # written after every run so an interrupted set keeps what finished
+            args.json.write_text(json.dumps(runs, indent=2))
 
     print_aggregate(runs)
-    if args.json:
-        args.json.write_text(json.dumps(runs, indent=2))
 
 
 if __name__ == "__main__":

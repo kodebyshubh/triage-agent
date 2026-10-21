@@ -1,0 +1,37 @@
+8 few-shot examples vs 53 tickets (test_tickets.json)
+Near-duplicate if char ratio >= 0.6, word Jaccard >= 0.5, or embedding cosine >= 0.8
+
+[ok] This is ridiculous, I can't find where to change my profile picture!!
+    max char ratio 0.46 (account_undo_deletion)
+    max word Jaccard 0.10 (account_email_change)
+    max embedding cosine 0.38 (account_email_change)
+[ok] Why does the export button do nothing? So irritating, I've clicked it ten times.
+    max char ratio 0.40 (pii_email_invoice)
+    max word Jaccard 0.06 (calib_billing_invoice_annoyed)
+    max embedding cosine 0.28 (calib_technical_crash_upset)
+[ok] I was billed again this month even though I cancelled in March. Really not happy about this.
+    max char ratio 0.42 (billing_duplicate_charge)
+    max word Jaccard 0.08 (ambiguous_not_working)
+    max embedding cosine 0.67 (billing_duplicate_charge)
+[NEAR-DUPLICATE] How do I change the billing address on my receipts?
+    max char ratio 0.74 (account_email_change)
+    max word Jaccard 0.29 (account_email_change)
+    max embedding cosine 0.49 (calib_account_email_tired)
+[ok] The app logs me out every couple of hours.
+    max char ratio 0.49 (technical_crash)
+    max word Jaccard 0.18 (technical_crash)
+    max embedding cosine 0.54 (technical_crash)
+[ok] I just got an alert that my password was changed from another country and I did not do it.
+    max char ratio 0.40 (pii_phone_password)
+    max word Jaccard 0.09 (account_hacked)
+    max embedding cosine 0.54 (account_hacked)
+[ok] Checkout has been failing for every customer in our store since your update an hour ago.
+    max char ratio 0.44 (technical_sync_wiped_files)
+    max word Jaccard 0.17 (technical_team_outage)
+    max embedding cosine 0.51 (technical_team_outage)
+[ok] Do you have a public API that partners can integrate with?
+    max char ratio 0.44 (account_locked_demo)
+    max word Jaccard 0.00 ()
+    max embedding cosine 0.39 (other_reseller_partnership)
+
+Result: 1/8 examples flagged as near-duplicates.
