@@ -10,3 +10,4 @@ zdnd/
 claude.md
 CLAUDE.md
 .serena/
+.pytest_cache/

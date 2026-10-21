@@ -1,5 +1,7 @@
 # TriageForge
 
+[![CI](https://github.com/kodebyshubh/triage-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/kodebyshubh/triage-agent/actions/workflows/ci.yml)
+
 Agentic support-ticket triage system: ingests a ticket, runs it through an input
 guardrail, an Orchestrator agent that genuinely delegates to Classifier /
 Retriever+Responder / Escalator tools via LangChain tool-calling, then an output
@@ -18,6 +20,33 @@ venv\Scripts\pip install -r requirements.txt
 venv\Scripts\python -m app.ingest        # embed data/kb/*.md into local ChromaDB
 venv\Scripts\python -m uvicorn app.main:app --reload
 ```
+
+## Frontend
+
+```
+cd frontend
+npm install
+npm run dev        # Vite dev server on http://localhost:5173
+```
+
+Minimal React + Vite + Tailwind SPA (`frontend/src/App.jsx`, one component,
+`useState`-only, no routing). Submits a ticket to the FastAPI backend at
+`http://127.0.0.1:8000/ticket` and renders the raw response, the agent trace
+as a timeline, and a final result card that branches on `final_action`. The
+backend's CORS config (`app/main.py`) whitelists this dev server's origin
+(`localhost:5173` / `127.0.0.1:5173`) explicitly.
+
+## Tests
+
+```
+venv\Scripts\pip install -r requirements-dev.txt
+venv\Scripts\python -m pytest
+```
+
+Unit tests under `tests/` cover schemas, PII redaction, the injection and output-leak
+heuristics, transport-retry scoping, memory, retrieval confidence math and the
+orchestrator's trace-to-`final_action` mapping. Every LLM call is mocked, so no API
+key is needed. CI runs the same suite on every push and pull request.
 
 ## Evaluation
 
