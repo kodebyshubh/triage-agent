@@ -108,6 +108,7 @@ def _row(t: dict, result: dict | None, http_error: str | None) -> dict:
             "actual_lookup": None,
             "lookup_match": None if expect_lookup is None else False,
             "latency_ms": None,
+            "transport_retries": None,
         }
 
     actual_action = result["final_action"]
@@ -149,6 +150,12 @@ def _row(t: dict, result: dict | None, http_error: str | None) -> dict:
         "actual_lookup": actual_lookup,
         "lookup_match": lookup_match,
         "latency_ms": result.get("latency_ms"),
+        # Retries after malformed model generations, by Groq error code (server
+        # reports these from the retry-scoping change on; older servers send none).
+        # None = this server version does not report retries (key absent).
+        "transport_retries": (
+            (result.get("transport_retries") or {}) if "transport_retries" in result else None
+        ),
     }
 
 
@@ -315,6 +322,21 @@ def print_aggregate(runs: list[list[dict]]) -> None:
     _rate("category mismatch",
           lambda r: not r["is_http_error"] and r["expected_category"] != r["actual_category"])
     _rate("guardrail mismatch", lambda r: not r["guardrail_match"])
+
+    reported = [r for r in pooled if r.get("transport_retries") is not None]
+    retried = [r for r in reported if r["transport_retries"]]
+    by_code: dict[str, int] = {}
+    for r in retried:
+        for code, k in r["transport_retries"].items():
+            by_code[code] = by_code.get(code, 0) + k
+    print("\nTransport retries (counted separately; a retried request can still succeed)")
+    if not reported:
+        print("  not recorded (server predates retry reporting)")
+    else:
+        print(f"  requests with >= 1 retry: {len(retried)}/{len(reported)} "
+              f"({len(retried) / len(reported):.1%})")
+    for code, k in sorted(by_code.items()):
+        print(f"  {code:<28}{k} retries")
 
     latencies = sorted(r["latency_ms"] for r in pooled if r["latency_ms"] is not None)
     if latencies:

@@ -17,7 +17,13 @@ from langchain_core.tools import BaseTool, Tool
 from app.agents.classifier import classify
 from app.agents.escalator import escalate
 from app.agents.responder import draft_response
-from app.llm import ROLE_MODELS, TransportFailure, get_chat_model
+from app.llm import (
+    ROLE_MODELS,
+    TransportFailure,
+    get_chat_model,
+    malformed_generation_code,
+    record_retry,
+)
 from app.retrieval import retrieve
 from app.schemas import (
     AgentTraceStep,
@@ -226,7 +232,7 @@ async def run_orchestrator(
 
     trace: list[AgentTraceStep] = []
     last_transport_error: Exception | None = None
-    for _attempt in range(_MAX_TRANSPORT_RETRIES + 1):
+    for attempt in range(_MAX_TRANSPORT_RETRIES + 1):
         # A transport retry starts a fresh trace; a streaming client treats the
         # final response's trace as authoritative.
         trace = _ObservedTrace(on_step)
@@ -239,12 +245,16 @@ async def run_orchestrator(
             last_transport_error = None
             break
         except BadRequestError as e:
-            # Only retry the model's own malformed function-call syntax (a transport
-            # failure). A syntactically valid but disagreeable routing decision is not
-            # caught here - that's a model quality issue, not something to retry away.
-            if "tool_use_failed" not in str(e):
+            # Only retry the model's own malformed generation (a transport failure:
+            # see MALFORMED_GENERATION_CODES). A syntactically valid but disagreeable
+            # routing decision is not caught here - that's a model quality issue,
+            # not something to retry away.
+            code = malformed_generation_code(e)
+            if code is None:
                 raise
             last_transport_error = e
+            if attempt < _MAX_TRANSPORT_RETRIES:
+                record_retry(code)
         except TransportFailure as e:
             # A tool call (classify/draft_response/escalate) already exhausted its
             # own retries inside invoke_structured_with_retry. Retrying the whole

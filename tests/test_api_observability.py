@@ -150,3 +150,24 @@ def test_langsmith_tracing_only_with_key(monkeypatch):
     assert observability.configure_tracing() is True
     assert observability.os.environ["LANGSMITH_TRACING"] == "true"
     assert observability.os.environ["LANGSMITH_API_KEY"] == "lsv2_test"
+
+
+def test_transport_retries_reported_in_response_and_metrics(client, monkeypatch):
+    from app import llm
+
+    async def _orch_retrying(ticket, history=None, mcp_tools=None, on_step=None):
+        llm.record_retry("json_validate_failed")
+        return TriageResponse(
+            final_action="escalated",
+            response=EscalationSummary(summary="s", suggested_priority="low", flagged_reason="r"),
+            trace=[],
+        )
+
+    monkeypatch.setattr(main, "run_orchestrator", _orch_retrying)
+    before = client.get("/metrics").text
+    body = client.post("/ticket", json=_TICKET).json()
+    after = client.get("/metrics").text
+    assert body["transport_retries"] == {"json_validate_failed": 1}
+    key = 'triage_transport_retries_total{code="json_validate_failed"}'
+    assert _metric(after, key) == _metric(before, key) + 1
+    assert client.post("/ticket", json=_TICKET).json()["transport_retries"] == {"json_validate_failed": 1}

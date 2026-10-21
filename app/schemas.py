@@ -88,3 +88,6 @@ class TriageResponse(BaseModel):
     latency_ms: float | None = None
     # Provider-reported tokens per model: {model: {input_tokens, output_tokens, total_tokens}}
     token_usage: dict[str, dict[str, int]] | None = None
+    # Retries after malformed model generations during this request, by Groq
+    # error code. None when there were none.
+    transport_retries: dict[str, int] | None = None

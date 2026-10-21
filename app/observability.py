@@ -73,6 +73,11 @@ OUTPUT_GUARDRAIL_BLOCKS = Counter(
 REQUEST_ERRORS = Counter(
     "triage_request_errors_total", "Requests that raised instead of returning.", ["error_type"]
 )
+TRANSPORT_RETRIES = Counter(
+    "triage_transport_retries_total",
+    "Retries after a malformed model generation, by Groq error code.",
+    ["code"],
+)
 RATE_LIMITED = Counter(
     "triage_groq_rate_limited_total", "Groq 429 responses seen at the HTTP transport.", ["model"]
 )

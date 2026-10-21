@@ -1,13 +1,15 @@
 import asyncio
+import contextvars
 import itertools
 import json
 import os
+import re
 import time
 
 import httpx
 from dotenv import load_dotenv
 
-from app.observability import RATE_LIMITED
+from app.observability import RATE_LIMITED, TRANSPORT_RETRIES
 
 load_dotenv()
 
@@ -156,6 +158,47 @@ _http_client = httpx.Client(transport=_RotatingTransport(), timeout=120)
 _http_async_client = httpx.AsyncClient(transport=_AsyncRotatingTransport(), timeout=120)
 
 
+# Groq error codes that mean the model's own output was malformed (unparseable tool
+# call or structured JSON), not that the request or the decision was wrong. Only
+# these are retried, by exact match on the error's code field.
+MALFORMED_GENERATION_CODES = frozenset(
+    {"tool_use_failed", "json_validate_failed", "output_parse_failed"}
+)
+_ERROR_CODE_RE = re.compile(r"'code': '([a-z_]+)'")
+
+
+def malformed_generation_code(error: Exception) -> str | None:
+    """The Groq error code if `error` is a malformed-generation failure, else None."""
+    code = None
+    body = getattr(error, "body", None)
+    if isinstance(body, dict):
+        inner = body.get("error", body)
+        code = inner.get("code") if isinstance(inner, dict) else None
+    if code is None:
+        match = _ERROR_CODE_RE.search(str(error))
+        code = match.group(1) if match else None
+    return code if code in MALFORMED_GENERATION_CODES else None
+
+
+# Per-request retry tally, read back by the API layer into the response.
+_retry_counts: contextvars.ContextVar[dict[str, int] | None] = contextvars.ContextVar(
+    "transport_retry_counts", default=None
+)
+
+
+def start_retry_tracking() -> dict[str, int]:
+    counts: dict[str, int] = {}
+    _retry_counts.set(counts)
+    return counts
+
+
+def record_retry(code: str) -> None:
+    TRANSPORT_RETRIES.labels(code=code).inc()
+    counts = _retry_counts.get()
+    if counts is not None:
+        counts[code] = counts.get(code, 0) + 1
+
+
 class TransportFailure(RuntimeError):
     """The model's own tool-call/structured-output generation was malformed after
     all retries - a transport-layer failure, not a content decision. Callers should
@@ -205,18 +248,21 @@ def get_chat_model(
 
 def invoke_structured_with_retry(structured_llm, messages):
     """Retries a with_structured_output call only on the model's own malformed
-    tool-call generation (a transport failure), never on a syntactically valid
-    result - same scoping as the orchestrator's transport-retry."""
+    generation (MALFORMED_GENERATION_CODES, a transport failure), never on a
+    syntactically valid result - same scoping as the orchestrator's transport-retry."""
     from groq import BadRequestError
 
     last_error: BadRequestError | None = None
-    for _ in range(_MAX_TRANSPORT_RETRIES + 1):
+    for attempt in range(_MAX_TRANSPORT_RETRIES + 1):
         try:
             return structured_llm.invoke(messages)
         except BadRequestError as e:
-            if "tool_use_failed" not in str(e):
+            code = malformed_generation_code(e)
+            if code is None:
                 raise
             last_error = e
+            if attempt < _MAX_TRANSPORT_RETRIES:
+                record_retry(code)
 
     raise TransportFailure(
         f"Structured-output call failed {_MAX_TRANSPORT_RETRIES + 1} times in a row "

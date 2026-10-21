@@ -20,6 +20,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from app.agents.orchestrator import run_orchestrator
 from app.guardrails import run_input_guardrail, run_output_guardrail
 from app import memory
+from app.llm import start_retry_tracking
 from app.memory import append_turn, get_history
 from app.observability import (
     FINAL_ACTIONS,
@@ -205,6 +206,7 @@ async def _triage(ticket: TicketInput, emit: Emit | None = None) -> TriageRespon
 
 async def _handle(ticket: TicketInput, request_id: str, emit: Emit | None = None) -> TriageResponse:
     start = time.perf_counter()
+    retries = start_retry_tracking()
     with get_usage_metadata_callback() as usage:
         response = await _triage(ticket, emit)
     latency_s = time.perf_counter() - start
@@ -218,6 +220,7 @@ async def _handle(ticket: TicketInput, request_id: str, emit: Emit | None = None
             "request_id": request_id,
             "latency_ms": round(latency_s * 1000, 1),
             "token_usage": token_usage or None,
+            "transport_retries": dict(retries) or None,
         }
     )
 
@@ -241,6 +244,7 @@ async def _handle(ticket: TicketInput, request_id: str, emit: Emit | None = None
             {"agent": s.agent_name, "latency_ms": s.latency_ms} for s in response.trace
         ],
         token_usage=token_usage,
+        transport_retries=dict(retries),
     )
     return response
 
