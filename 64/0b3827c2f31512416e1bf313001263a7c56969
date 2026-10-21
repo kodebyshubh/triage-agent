@@ -1,0 +1,82 @@
+eval/errors_before_retry_change.txt
+  s_15a9959e77d786::t_5e0df82df9702e 1-23
+eval/fewshot_overlap_check_v2_with_heldout.txt
+  s_15a9959e77d786::t_998d197e351d64 1-37
+eval/heldout_tickets.json
+  s_15a9959e77d786::t_998d197e351d64 1-164
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "640b3827c2f31512416e1bf313001263a7c56969",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:b2cc0f5ed666faa176dfecb0f7796f1c90e68de112d3e213f7afec77b317e035",
+      "total_additions": 1359,
+      "total_deletions": 0,
+      "accepted_lines": 1412,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_823967a5b70be2": {
+      "author": "imbohra777 <shubhbohra44@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:b2cc0f5ed666faa176dfecb0f7796f1c90e68de112d3e213f7afec77b317e035",
+      "stats": {
+        "total_additions": 1359,
+        "total_deletions": 0,
+        "accepted_lines": 1412,
+        "overriden_lines": 0,
+        "files": {
+          "CLAUDE.md": {
+            "total_additions": 18,
+            "total_deletions": 0,
+            "accepted_lines": 71,
+            "overriden_lines": 0
+          },
+          "eval/errors_before_retry_change.txt": {
+            "total_additions": 23,
+            "total_deletions": 0,
+            "accepted_lines": 23,
+            "overriden_lines": 0
+          },
+          "eval/fewshot_overlap_check_v2_with_heldout.txt": {
+            "total_additions": 37,
+            "total_deletions": 0,
+            "accepted_lines": 37,
+            "overriden_lines": 0
+          },
+          "eval/heldout_tickets.json": {
+            "total_additions": 164,
+            "total_deletions": 0,
+            "accepted_lines": 164,
+            "overriden_lines": 0
+          },
+          "eval/phase2_screen_orch_qwen.json": {
+            "total_additions": 1117,
+            "total_deletions": 0,
+            "accepted_lines": 1117,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
