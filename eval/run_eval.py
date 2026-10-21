@@ -23,6 +23,9 @@ import requests
 TICKETS_PATH = Path(__file__).parent / "test_tickets.json"
 SERVER_URL = os.getenv("TRIAGEFORGE_URL", "http://127.0.0.1:8000")
 ORIGINAL_TICKET_COUNT = 16
+# Generous by default: under Groq free-tier daily limits the server may wait for
+# a rate-limited key to refill before answering.
+REQUEST_TIMEOUT_S = float(os.getenv("TRIAGEFORGE_EVAL_TIMEOUT_S", "3600"))
 
 
 def _actual_category(trace: list[dict]) -> str | None:
@@ -66,7 +69,9 @@ def _post(t: dict, run: int) -> tuple[dict | None, str | None]:
     if os.getenv("TRIAGEFORGE_API_KEY"):
         headers["X-API-Key"] = os.environ["TRIAGEFORGE_API_KEY"]
     try:
-        resp = requests.post(f"{SERVER_URL}/ticket", json=payload, headers=headers, timeout=180)
+        resp = requests.post(
+            f"{SERVER_URL}/ticket", json=payload, headers=headers, timeout=REQUEST_TIMEOUT_S
+        )
     except requests.RequestException as e:
         return None, f"{type(e).__name__}"
     if resp.status_code != 200:

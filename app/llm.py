@@ -103,7 +103,7 @@ class _RotatingTransport(httpx.HTTPTransport):
         while True:
             key = _pick_key(model, tried)
             if key is None:
-                wait = _wait_for_key(model, waited) if response is not None else None
+                wait = _wait_for_key(model, waited)
                 if wait is None:
                     break
                 time.sleep(wait)
@@ -129,7 +129,7 @@ class _AsyncRotatingTransport(httpx.AsyncHTTPTransport):
         while True:
             key = _pick_key(model, tried)
             if key is None:
-                wait = _wait_for_key(model, waited) if response is not None else None
+                wait = _wait_for_key(model, waited)
                 if wait is None:
                     break
                 await asyncio.sleep(wait)

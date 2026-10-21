@@ -84,6 +84,17 @@ def test_all_keys_limited_waits_for_earliest_then_retries(monkeypatch):
     assert len(seen) == 4
 
 
+def test_waits_when_every_key_already_parked_before_first_attempt(monkeypatch):
+    seen = _fake_network(monkeypatch, limited=set())
+    for key in ("k0", "k2", "k3"):
+        llm._cooldown_until[(key, "openai/gpt-oss-20b")] = llm.time.monotonic() + 20
+    sleeps = []
+    monkeypatch.setattr(llm.time, "sleep", lambda s: (sleeps.append(s), llm._cooldown_until.clear()))
+    resp = llm._RotatingTransport().handle_request(_request())
+    assert resp.status_code == 200
+    assert len(sleeps) == 1 and len(seen) == 1  # waited instead of sending on a parked key
+
+
 def test_async_transport_fails_over(monkeypatch):
     seen = _fake_network(monkeypatch, limited={"k0", "k2"})
     for _ in range(3):
