@@ -1,0 +1,17 @@
+.git
+.github
+.claude
+.serena
+venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.env
+chroma_db
+models
+zdnd
+tests
+eval
+frontend
+*.md
+!data/kb/*.md

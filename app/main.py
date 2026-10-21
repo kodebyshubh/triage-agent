@@ -1,4 +1,5 @@
 import asyncio
+import os
 import sys
 import time
 import uuid
@@ -43,6 +44,14 @@ from app.security import auth_enabled, require_api_key
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+# Comma-separated list. The default keeps local dev working (the Vite dev server);
+# Docker and cloud deploys set it to their frontend origin(s).
+ALLOWED_ORIGINS = [
+    o.strip()
+    for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+    if o.strip()
+]
+
 configure_logging()
 _TRACING = configure_tracing()
 
@@ -74,7 +83,7 @@ app = FastAPI(title="TriageForge", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["X-Request-ID"],

@@ -1,6 +1,10 @@
 import { useState } from 'react'
 
-const API_URL = 'http://127.0.0.1:8000'
+// Set at build time (Vite env). Falls back to the local backend for `npm run dev`.
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+// Optional: only needed when the backend has TRIAGEFORGE_API_KEYS set. Anything in
+// a VITE_ variable ships inside the JS bundle, so treat this as a demo key only.
+const API_KEY = import.meta.env.VITE_API_KEY || ''
 
 const ACTION_STYLES = {
   auto_resolved: { label: 'Auto-resolved', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
@@ -69,7 +73,10 @@ function App() {
     try {
       const resp = await fetch(`${API_URL}/ticket`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(API_KEY ? { 'X-API-Key': API_KEY } : {}),
+        },
         body: JSON.stringify({
           ticket_id: `ticket-${Date.now()}`,
           user_message: message,

@@ -1,0 +1,52 @@
+# Render Blueprint: free web service (backend, Docker), free static site
+# (frontend) and a free Key Value instance (Redis-compatible) for sessions.
+# Secrets use sync: false, so Render asks for them when the Blueprint is created;
+# nothing secret lives in this file.
+services:
+  - type: web
+    name: triageforge-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TRIAGEFORGE_API_KEYS
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: LANGSMITH_API_KEY
+        sync: false
+      - key: LANGSMITH_PROJECT
+        value: triageforge
+      - key: RATE_LIMIT_PER_MIN
+        value: "30"
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: triageforge-sessions
+          property: connectionString
+
+  - type: web
+    name: triageforge-ui
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+      - key: VITE_API_KEY
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: keyvalue
+    name: triageforge-sessions
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: [] # internal connections only
