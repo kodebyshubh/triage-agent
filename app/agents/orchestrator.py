@@ -15,7 +15,7 @@ from langchain_core.tools import BaseTool, Tool
 from app.agents.classifier import classify
 from app.agents.escalator import escalate
 from app.agents.responder import draft_response
-from app.llm import TransportFailure, get_chat_model
+from app.llm import ROLE_MODELS, TransportFailure, get_chat_model
 from app.retrieval import retrieve
 from app.schemas import (
     AgentTraceStep,
@@ -30,9 +30,9 @@ HistoryTurn = tuple[TicketInput, TriageResponse]
 # gpt-oss-20b proved reliable at the tool-calling loop itself in isolated testing,
 # where the previous default (llama-3.1-8b-instant, since decommissioned by Groq)
 # systematically over-escalated even after prompt fixes. The default model is now
-# also gpt-oss-20b; this stays explicit so the orchestrator keeps the model
-# default reasoning effort while classify/draft/escalate run at "low".
-_ORCHESTRATOR_MODEL = "openai/gpt-oss-20b"
+# also gpt-oss-20b. The orchestrator keeps the model default reasoning effort
+# while classify/draft/escalate run at "low". Selected per role in app/llm.py.
+_ORCHESTRATOR_MODEL = ROLE_MODELS["orchestrator"]
 
 _SYSTEM_PROMPT = """You are the Orchestrator for a support ticket triage system.
 

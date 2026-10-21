@@ -1,5 +1,5 @@
 from app.schemas import ResolutionDraft, RetrievalResult, TicketInput
-from app.llm import get_chat_model, invoke_structured_with_retry
+from app.llm import ROLE_MODELS, get_chat_model, invoke_structured_with_retry
 
 _SYSTEM_PROMPT = (
     "You are a support response drafter. Using ONLY the provided knowledge base "
@@ -10,7 +10,7 @@ _SYSTEM_PROMPT = (
 
 
 def draft_response(ticket: TicketInput, retrieval: RetrievalResult) -> ResolutionDraft:
-    llm = get_chat_model(reasoning_effort="low")
+    llm = get_chat_model(model=ROLE_MODELS["responder"], reasoning_effort="low")
     structured_llm = llm.with_structured_output(
         ResolutionDraft, method="json_schema", strict=True
     )

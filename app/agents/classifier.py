@@ -1,4 +1,4 @@
-from app.llm import get_chat_model, invoke_structured_with_retry
+from app.llm import ROLE_MODELS, get_chat_model, invoke_structured_with_retry
 from app.schemas import ClassificationResult, TicketInput
 
 _SYSTEM_PROMPT = (
@@ -8,7 +8,7 @@ _SYSTEM_PROMPT = (
 
 
 def classify(ticket: TicketInput) -> ClassificationResult:
-    llm = get_chat_model(reasoning_effort="low")
+    llm = get_chat_model(model=ROLE_MODELS["classifier"], reasoning_effort="low")
     structured_llm = llm.with_structured_output(
         ClassificationResult, method="json_schema", strict=True
     )
