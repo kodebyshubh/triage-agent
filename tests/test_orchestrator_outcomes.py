@@ -133,3 +133,12 @@ def test_history_is_prepended_as_context(monkeypatch, mocked_agents):
     asyncio.run(orchestrator.run_orchestrator(_TICKET, history=[(_TICKET, prior)]))
     assert len(seen["messages"]) == 2
     assert seen["messages"][0][1].startswith("Context from earlier in this ticket thread")
+
+
+def test_on_step_sees_every_step_as_it_is_recorded(monkeypatch, mocked_agents):
+    _script(monkeypatch, [("classify", ""), ("check_account_status", "acc-1001"), ("escalate", "r")])
+    seen = []
+    result = _run(mcp_tools=[_mcp_tool()], on_step=lambda s: seen.append(s.agent_name))
+    assert seen == ["Classifier", "AccountLookup", "Escalator"]
+    assert [s.agent_name for s in result.trace] == seen
+    assert all(s.latency_ms is not None for s in result.trace)

@@ -24,7 +24,7 @@ def client(monkeypatch):
     async def _out_ok(text):
         return True
 
-    async def _orch(ticket, history=None, mcp_tools=None):
+    async def _orch(ticket, history=None, mcp_tools=None, on_step=None):
         return TriageResponse(
             final_action="escalated",
             response=EscalationSummary(summary="s", suggested_priority="low", flagged_reason="r"),

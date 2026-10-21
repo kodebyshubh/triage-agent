@@ -33,7 +33,7 @@ def client(monkeypatch):
     async def _out_ok(text):
         return True
 
-    async def _orch(ticket, history=None, mcp_tools=None):
+    async def _orch(ticket, history=None, mcp_tools=None, on_step=None):
         cls = ClassificationResult(category="billing", urgency=2, sentiment="neutral")
         draft = ResolutionDraft(draft_text="Go to Billing.", confidence=0.9, citations=["billing.md"])
         return TriageResponse(
@@ -111,7 +111,7 @@ def test_metrics_count_guardrail_flags_and_rejections(client, monkeypatch):
 
 
 def test_transport_error_counter(client, monkeypatch):
-    async def _orch_err(ticket, history=None, mcp_tools=None):
+    async def _orch_err(ticket, history=None, mcp_tools=None, on_step=None):
         return TriageResponse(
             final_action="escalated_due_to_error",
             response=EscalationSummary(summary="s", suggested_priority="medium", flagged_reason="r"),

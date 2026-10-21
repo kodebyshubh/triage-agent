@@ -14,12 +14,40 @@ const ACTION_STYLES = {
   escalated_incomplete_lookup: { label: 'Escalated (incomplete lookup)', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 }
 
+// Reads a Server-Sent Events stream from a fetch() Response (EventSource only
+// supports GET, and the ticket endpoint is a POST). Calls onEvent(name, data).
+async function readEventStream(resp, onEvent) {
+  const reader = resp.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+    let sep
+    while ((sep = buffer.indexOf('\n\n')) !== -1) {
+      const block = buffer.slice(0, sep)
+      buffer = buffer.slice(sep + 2)
+      let event = 'message'
+      let data = ''
+      for (const line of block.split('\n')) {
+        if (line.startsWith('event: ')) event = line.slice(7)
+        else if (line.startsWith('data: ')) data += line.slice(6)
+      }
+      if (data) onEvent(event, JSON.parse(data))
+    }
+  }
+}
+
 function TraceStep({ step }) {
   return (
     <div className="relative pl-6 pb-6 last:pb-0 border-l border-white/10 last:border-transparent">
       <div className="absolute -left-[5px] top-1 h-[9px] w-[9px] rounded-full bg-violet-400" />
       <div className="text-sm font-medium text-white/90">{step.agent_name}</div>
-      <div className="text-xs text-white/40 mt-0.5">{step.timestamp}</div>
+      <div className="text-xs text-white/40 mt-0.5">
+        {step.timestamp}
+        {step.latency_ms != null && <span className="ml-2">{Math.round(step.latency_ms)} ms</span>}
+      </div>
       <pre className="mt-2 text-xs bg-white/5 border border-white/10 rounded-md p-3 overflow-x-auto whitespace-pre-wrap break-words">
         {JSON.stringify(step.output, null, 2)}
       </pre>
@@ -63,15 +91,20 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [result, setResult] = useState(null)
+  // Filled while the request streams; replaced by result.trace once it finishes.
+  const [liveSteps, setLiveSteps] = useState([])
+  const [liveStatus, setLiveStatus] = useState([])
 
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
     setError(null)
     setResult(null)
+    setLiveSteps([])
+    setLiveStatus([])
 
     try {
-      const resp = await fetch(`${API_URL}/ticket`, {
+      const resp = await fetch(`${API_URL}/ticket/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,12 +116,24 @@ function App() {
           session_id: sessionId,
         }),
       })
-      const data = await resp.json()
       if (!resp.ok) {
-        setError(data.detail ? JSON.stringify(data.detail) : 'Request failed')
-      } else {
-        setResult(data)
+        const data = await resp.json().catch(() => ({}))
+        setError(data.detail ? JSON.stringify(data.detail) : `Request failed (${resp.status})`)
+        return
       }
+      await readEventStream(resp, (event, data) => {
+        if (event === 'input_guardrail') {
+          setLiveStatus((s) => [...s, data.is_safe ? 'Input guardrail passed' : `Input guardrail rejected (${data.flags.join(', ')})`])
+        } else if (event === 'step') {
+          setLiveSteps((s) => [...s, data])
+        } else if (event === 'output_guardrail') {
+          setLiveStatus((s) => [...s, data.passed ? 'Output guardrail passed' : 'Output guardrail blocked the reply'])
+        } else if (event === 'final') {
+          setResult(data)
+        } else if (event === 'error') {
+          setError(data.detail)
+        }
+      })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -132,6 +177,21 @@ function App() {
         </p>
       )}
 
+      {loading && (liveStatus.length > 0 || liveSteps.length > 0) && (
+        <div className="mt-10">
+          <h2 className="text-sm font-medium text-white/60 mb-3">Live trace</h2>
+          {liveStatus.map((s, i) => (
+            <p key={i} className="text-xs text-white/50 mb-2">{s}</p>
+          ))}
+          <div>
+            {liveSteps.map((step, i) => (
+              <TraceStep key={i} step={step} />
+            ))}
+          </div>
+          <p className="text-xs text-white/30 mt-3 animate-pulse">Waiting for the next step...</p>
+        </div>
+      )}
+
       {result && (
         <div className="mt-10 space-y-8">
           <div>
@@ -142,7 +202,12 @@ function App() {
           </div>
 
           <div>
-            <h2 className="text-sm font-medium text-white/60 mb-3">Agent trace</h2>
+            <h2 className="text-sm font-medium text-white/60 mb-3">
+              Agent trace
+              {result.latency_ms != null && (
+                <span className="ml-2 text-white/30 font-normal">total {(result.latency_ms / 1000).toFixed(1)} s</span>
+              )}
+            </h2>
             {result.trace.length > 0 ? (
               <div>
                 {result.trace.map((step, i) => (

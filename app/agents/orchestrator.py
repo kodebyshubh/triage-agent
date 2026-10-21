@@ -7,6 +7,7 @@ step, not by if/else logic in this file.
 """
 
 import time
+from collections.abc import Callable
 from datetime import datetime, timezone
 
 from groq import BadRequestError
@@ -196,10 +197,26 @@ def _history_to_message(history: list[HistoryTurn]) -> str | None:
 _MAX_TRANSPORT_RETRIES = 2  # retries a malformed tool-call generation, never a routing decision
 
 
+class _ObservedTrace(list):
+    """The shared trace list, plus an optional callback fired on every append, so
+    a streaming client can show each step as soon as it completes. Purely an
+    observer: it never changes what the agent does."""
+
+    def __init__(self, on_step: Callable[[AgentTraceStep], None] | None):
+        super().__init__()
+        self._on_step = on_step
+
+    def append(self, step: AgentTraceStep) -> None:
+        super().append(step)
+        if self._on_step is not None:
+            self._on_step(step)
+
+
 async def run_orchestrator(
     ticket: TicketInput,
     history: list[HistoryTurn] | None = None,
     mcp_tools: list[BaseTool] | None = None,
+    on_step: Callable[[AgentTraceStep], None] | None = None,
 ) -> TriageResponse:
     messages = []
     context_message = _history_to_message(history or [])
@@ -210,7 +227,9 @@ async def run_orchestrator(
     trace: list[AgentTraceStep] = []
     last_transport_error: Exception | None = None
     for _attempt in range(_MAX_TRANSPORT_RETRIES + 1):
-        trace = []
+        # A transport retry starts a fresh trace; a streaming client treats the
+        # final response's trace as authoritative.
+        trace = _ObservedTrace(on_step)
         tools = _build_tools(ticket, trace) + _build_mcp_tools(mcp_tools or [], trace)
         agent = create_agent(
             get_chat_model(model=_ORCHESTRATOR_MODEL), tools=tools, system_prompt=_SYSTEM_PROMPT

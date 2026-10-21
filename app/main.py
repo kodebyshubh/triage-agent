@@ -1,13 +1,16 @@
 import asyncio
+import json
 import os
 import sys
 import time
 import uuid
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from langchain_core.callbacks import get_usage_metadata_callback
 from langchain_mcp_adapters.tools import load_mcp_tools
 from mcp import ClientSession, StdioServerParameters
@@ -137,7 +140,12 @@ async def _timed(step: str, coro):
         STEP_LATENCY.labels(step=step).observe(time.perf_counter() - start)
 
 
-async def _triage(ticket: TicketInput) -> TriageResponse:
+# emit(event, data) is an optional progress callback used by the streaming
+# endpoint. POST /ticket passes nothing and behaves exactly as before.
+Emit = Callable[[str, dict], None]
+
+
+async def _triage(ticket: TicketInput, emit: Emit | None = None) -> TriageResponse:
     # Session history is fetched while the input guardrail runs. It is only read
     # after the guardrail passes, so overlapping the two is safe.
     guardrail_result, history = await asyncio.gather(
@@ -146,6 +154,8 @@ async def _triage(ticket: TicketInput) -> TriageResponse:
     )
     for flag in guardrail_result.flags:
         GUARDRAIL_FLAGS.labels(flag=flag).inc()
+    if emit:
+        emit("input_guardrail", {"is_safe": guardrail_result.is_safe, "flags": guardrail_result.flags})
 
     if not guardrail_result.is_safe:
         rejection = EscalationSummary(
@@ -159,7 +169,12 @@ async def _triage(ticket: TicketInput) -> TriageResponse:
         update={"user_message": guardrail_result.redacted_message}
     )
 
-    response = await run_orchestrator(safe_ticket, history=history, mcp_tools=app.state.mcp_tools)
+    response = await run_orchestrator(
+        safe_ticket,
+        history=history,
+        mcp_tools=app.state.mcp_tools,
+        on_step=(lambda step: emit("step", step.model_dump())) if emit else None,
+    )
 
     output_text = (
         response.response.draft_text
@@ -167,6 +182,8 @@ async def _triage(ticket: TicketInput) -> TriageResponse:
         else response.response.summary
     )
     output_ok = await _timed("output_guardrail", run_output_guardrail(output_text))
+    if emit:
+        emit("output_guardrail", {"passed": output_ok})
     if not output_ok:
         OUTPUT_GUARDRAIL_BLOCKS.inc()
         blocked = TriageResponse(
@@ -186,11 +203,10 @@ async def _triage(ticket: TicketInput) -> TriageResponse:
     return response
 
 
-@app.post("/ticket", response_model=TriageResponse, dependencies=[Depends(require_api_key)])
-async def submit_ticket(ticket: TicketRequest, request: Request) -> TriageResponse:
+async def _handle(ticket: TicketInput, request_id: str, emit: Emit | None = None) -> TriageResponse:
     start = time.perf_counter()
     with get_usage_metadata_callback() as usage:
-        response = await _triage(ticket)
+        response = await _triage(ticket, emit)
     latency_s = time.perf_counter() - start
 
     token_usage = {
@@ -199,7 +215,7 @@ async def submit_ticket(ticket: TicketRequest, request: Request) -> TriageRespon
     }
     response = response.model_copy(
         update={
-            "request_id": request.state.request_id,
+            "request_id": request_id,
             "latency_ms": round(latency_s * 1000, 1),
             "token_usage": token_usage or None,
         }
@@ -227,3 +243,50 @@ async def submit_ticket(ticket: TicketRequest, request: Request) -> TriageRespon
         token_usage=token_usage,
     )
     return response
+
+
+@app.post("/ticket", response_model=TriageResponse, dependencies=[Depends(require_api_key)])
+async def submit_ticket(ticket: TicketRequest, request: Request) -> TriageResponse:
+    return await _handle(ticket, request.state.request_id)
+
+
+@app.post("/ticket/stream", dependencies=[Depends(require_api_key)])
+async def submit_ticket_stream(ticket: TicketRequest, request: Request) -> StreamingResponse:
+    """Same pipeline as POST /ticket, streamed as Server-Sent Events:
+    `input_guardrail`, one `step` per trace step as it completes, `output_guardrail`,
+    then `final` (the full TriageResponse, whose trace is authoritative) or `error`."""
+    loop = asyncio.get_running_loop()
+    queue: asyncio.Queue = asyncio.Queue()
+
+    def emit(event: str, data: dict) -> None:
+        # Tool calls can run in worker threads, so hand events to the loop safely.
+        loop.call_soon_threadsafe(queue.put_nowait, (event, data))
+
+    async def run() -> None:
+        try:
+            response = await _handle(ticket, request.state.request_id, emit)
+            emit("final", response.model_dump())
+        except Exception as e:
+            REQUEST_ERRORS.labels(error_type=type(e).__name__).inc()
+            logger.exception("stream_failed")
+            emit("error", {"detail": f"{type(e).__name__}: request failed"})
+        finally:
+            loop.call_soon_threadsafe(queue.put_nowait, None)
+
+    task = asyncio.create_task(run())
+
+    def sse(event: str, data: dict) -> str:
+        return f"event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
+
+    async def events():
+        yield sse("start", {"request_id": request.state.request_id})
+        while (item := await queue.get()) is not None:
+            yield sse(*item)
+        await task
+
+    return StreamingResponse(
+        events(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
