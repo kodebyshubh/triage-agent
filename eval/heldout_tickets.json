@@ -1,0 +1,164 @@
+[
+  {
+    "ticket_id": "ho_refund_fed_up",
+    "session_id": "heldout-ho_refund_fed_up",
+    "user_message": "Honestly fed up. I ordered the wrong size two days ago and just want a refund, what are the steps?",
+    "expected_category": "billing",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_double_charge_caps",
+    "session_id": "heldout-ho_double_charge_caps",
+    "user_message": "WHY are there two charges for one purchase on my card?? Please explain.",
+    "expected_category": "billing",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_crash_annoyed",
+    "session_id": "heldout-ho_crash_annoyed",
+    "user_message": "Every single time I open the app on my Android it closes itself. Super annoying.",
+    "expected_category": "technical",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_timeout_irritated",
+    "session_id": "heldout-ho_timeout_irritated",
+    "user_message": "Dashboard keeps timing out on me, this is getting really old.",
+    "expected_category": "technical",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_password_frustrated",
+    "session_id": "heldout-ho_password_frustrated",
+    "user_message": "I can't remember my password and I'm getting frustrated. How do I get back in?",
+    "expected_category": "account",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_sync_driving_nuts",
+    "session_id": "heldout-ho_sync_driving_nuts",
+    "user_message": "My tablet and phone show different data and it's driving me nuts.",
+    "expected_category": "technical",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_invoice_pdf",
+    "session_id": "heldout-ho_invoice_pdf",
+    "user_message": "Where can I download a PDF invoice for my order from March?",
+    "expected_category": "billing",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_switch_card",
+    "session_id": "heldout-ho_switch_card",
+    "user_message": "I'd like to switch the card my subscription charges.",
+    "expected_category": "billing",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_email_work_address",
+    "session_id": "heldout-ho_email_work_address",
+    "user_message": "Need to update the email on my profile to my new work address.",
+    "expected_category": "account",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_close_account",
+    "session_id": "heldout-ho_close_account",
+    "user_message": "Please tell me how to permanently close my account.",
+    "expected_category": "account",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_2fa_switched_phones",
+    "session_id": "heldout-ho_2fa_switched_phones",
+    "user_message": "How can I reset two-factor login after switching phones?",
+    "expected_category": "technical",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_saved_card_fraud",
+    "session_id": "heldout-ho_saved_card_fraud",
+    "user_message": "Someone used my saved card on your site to buy four subscriptions I never ordered.",
+    "expected_category": "billing",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_unknown_logins",
+    "session_id": "heldout-ho_unknown_logins",
+    "user_message": "I'm seeing logins to my account from cities I've never been to and my recovery email was changed.",
+    "expected_category": "account",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_clinic_outage",
+    "session_id": "heldout-ho_clinic_outage",
+    "user_message": "None of our 25 staff can open the app since 8am and our clinic can't book patients.",
+    "expected_category": "technical",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_consumer_court",
+    "session_id": "heldout-ho_consumer_court",
+    "user_message": "You double charged my business 2,000 dollars and my bank says only you can reverse it. Fix this by tomorrow or we go to consumer court.",
+    "expected_category": "billing",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_client_records_gone",
+    "session_id": "heldout-ho_client_records_gone",
+    "user_message": "After the update all of my client records are gone from every device. I need them back today.",
+    "expected_category": "technical",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_vague_call_me",
+    "session_id": "heldout-ho_vague_call_me",
+    "user_message": "something weird is happening, please call me",
+    "expected_category": "other",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_hackathon_sponsor",
+    "session_id": "heldout-ho_hackathon_sponsor",
+    "user_message": "Do you sponsor college hackathons?",
+    "expected_category": "other",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": []
+  },
+  {
+    "ticket_id": "ho_lookup_invoice",
+    "session_id": "heldout-ho_lookup_invoice",
+    "user_message": "This is account acc-1003. Where do I get the invoice for our last order?",
+    "expected_category": "billing",
+    "expected_action": "auto_resolved",
+    "expected_guardrail_flags": [],
+    "expect_account_lookup": true
+  },
+  {
+    "ticket_id": "ho_lookup_charged_thrice",
+    "session_id": "heldout-ho_lookup_charged_thrice",
+    "user_message": "Account acc-1002 was charged three times today and now our team is blocked from logging in before a client deadline.",
+    "expected_category": "billing",
+    "expected_action": "escalated",
+    "expected_guardrail_flags": [],
+    "expect_account_lookup": true
+  }
+]

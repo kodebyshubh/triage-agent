@@ -1,0 +1,23 @@
+HTTP 500 causes in server logs for eval runs made BEFORE the retry-scoping change
+(only tool_use_failed was retried then; json_validate_failed / output_parse_failed
+propagated as HTTP 500). Source: the uvicorn log of each run's server.
+
+run A (old prompt, 53x3)
+  POST /ticket responses: 159, of which HTTP 500: 25
+    json_validate_failed: 2   output_parse_failed: 1   Groq 429 after wait: 21   other: 1
+run B (few-shot v1; runs 1-2 complete, run 3 aborted mid-way)
+  POST /ticket responses: 123, of which HTTP 500: 2
+    json_validate_failed: 0   output_parse_failed: 0   Groq 429 after wait: 0   other: 2
+run C (few-shot v2, 53x3)
+  POST /ticket responses: 159, of which HTTP 500: 1
+    json_validate_failed: 0   output_parse_failed: 0   Groq 429 after wait: 0   other: 1
+
+Total over these runs
+  json_validate_failed     2/441 (0.45%)
+  output_parse_failed      1/441 (0.23%)
+  rate_limit_429          21/441 (4.76%)
+  other                    4/441 (0.91%)
+  malformed generation (json_validate_failed + output_parse_failed): 3/441 (0.68%)
+
+'other' = the orchestrator's intentional RuntimeError for an unrecognized trace shape
+(e.g. the model stopped right after classify), kept loud by design.
