@@ -9,3 +9,4 @@ python-dotenv
 requests
 mcp
 langchain-mcp-adapters
+rank_bm25

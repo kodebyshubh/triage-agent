@@ -1,0 +1,12 @@
+Cross-encoder ms-marco-MiniLM-L6-v2, 10 (query, chunk) pairs, CPU, 30 timed runs
+
+backend                   load ms   p50 ms   p95 ms   RSS MB  added MB
+onnxruntime                  1631    140.7    159.4      200       180
+sentence-transformers       27716    173.0    208.0      526       507
+
+Max abs score difference between backends: 0.00001
+Same ranking order: True
+
+Environment: Windows 11, CPU only. torch 2.14.1+cpu, sentence-transformers 6.1.0, onnxruntime 1.27.0.
+load ms = import + model load + first scoring call, model files already cached locally.
+torch package alone is 539 MB on disk.

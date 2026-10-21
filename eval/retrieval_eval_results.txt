@@ -1,0 +1,120 @@
+Retrieval eval: 72 labeled queries over the ingested KB
+
+All queries (n=72)
+  system                     hit@1   hit@3     MRR   p50 ms   p95 ms
+  vector                     86.1%   98.6%   0.925    351.0    453.9
+  hybrid                     73.6%   88.9%   0.817    342.8    523.7
+  hybrid_rerank              80.6%   93.1%   0.867    477.9    539.0
+  (diag) bm25 only           59.7%   73.6%   0.682      2.1      2.7
+  (diag) vector_rerank       81.9%   97.2%   0.891    462.5    654.2
+
+Style: paraphrase (n=60)
+  system                     hit@1   hit@3     MRR
+  vector                     83.3%   98.3%   0.910
+  hybrid                     68.3%   86.7%   0.780
+  hybrid_rerank              76.7%   91.7%   0.840
+  (diag) bm25 only           53.3%   68.3%   0.627
+  (diag) vector_rerank       78.3%   96.7%   0.869
+
+Style: keyword (n=12)
+  system                     hit@1   hit@3     MRR
+  vector                    100.0%  100.0%   1.000
+  hybrid                    100.0%  100.0%   1.000
+  hybrid_rerank             100.0%  100.0%   1.000
+  (diag) bm25 only           91.7%  100.0%   0.958
+  (diag) vector_rerank      100.0%  100.0%   1.000
+
+Not ranked first, vector (10):
+  rank=2  expected=billing-2     top3=['billing-5', 'billing-2', 'billing-10']  need to put a different card on file
+  rank=3  expected=billing-6     top3=['billing-7', 'billing-8', 'billing-6']  stop my plan so I am not billed next month
+  rank=2  expected=billing-14    top3=['billing-0', 'billing-14', 'billing-6']  refund for a yearly subscription I bought 3 weeks ago
+  rank=2  expected=account-2     top3=['account-14', 'account-2', 'technical-2']  cannot remember my login password
+  rank=2  expected=account-11    top3=['account-4', 'account-11', 'account-15']  pick a different handle for my profile
+  rank=2  expected=technical-3   top3=['technical-15', 'technical-3', 'technical-6']  changes on my laptop do not show up on my phone
+  rank=2  expected=technical-15  top3=['other-3', 'technical-15', 'technical-4']  can I use the app on a plane without wifi
+  rank=2  expected=other-2       top3=['other-0', 'other-2', 'technical-1']  is there an outage right now
+  rank=2  expected=other-6       top3=['other-4', 'other-6', 'other-3']  can someone walk my team through the product
+  rank=4  expected=other-11      top3=['billing-4', 'account-12', 'other-0']  what SLA do you offer
+
+Not ranked first, hybrid (19):
+  rank=3  expected=billing-1     top3=['billing-2', 'billing-5', 'billing-1']  my statement shows the same payment two times
+  rank=6  expected=billing-2     top3=['billing-5', 'billing-15', 'billing-7']  need to put a different card on file
+  rank=3  expected=billing-6     top3=['billing-8', 'billing-11', 'billing-6']  stop my plan so I am not billed next month
+  rank=3  expected=billing-14    top3=['billing-0', 'billing-7', 'billing-14']  refund for a yearly subscription I bought 3 weeks ago
+  rank=11  expected=account-1     top3=['account-4', 'account-5', 'account-11']  permanently remove my profile and everything in it
+  rank=2  expected=account-2     top3=['account-14', 'account-2', 'account-8']  cannot remember my login password
+  rank=2  expected=account-3     top3=['technical-2', 'account-3', 'technical-3']  combine two separate profiles into one
+  rank=3  expected=account-11    top3=['account-4', 'account-15', 'account-11']  pick a different handle for my profile
+  rank=3  expected=technical-0   top3=['other-1', 'technical-5', 'technical-0']  app closes by itself right after launch
+  rank=8  expected=technical-1   top3=['technical-6', 'account-2', 'other-4']  request times out when loading the dashboard
+  rank=3  expected=technical-3   top3=['technical-6', 'technical-15', 'technical-3']  changes on my laptop do not show up on my phone
+  rank=2  expected=technical-6   top3=['account-13', 'technical-6', 'other-2']  I don't get push alerts on android
+  rank=4  expected=technical-13  top3=['other-2', 'billing-5', 'technical-11']  is there a night theme
+  rank=2  expected=technical-15  top3=['other-3', 'technical-15', 'technical-1']  can I use the app on a plane without wifi
+  rank=19  expected=other-0       top3=['other-6', 'account-15', 'other-4']  what time is your team available to help
+  rank=4  expected=other-5       top3=['billing-6', 'technical-3', 'technical-1']  I found a bug that exposes data, who do I tell
+  rank=2  expected=other-6       top3=['other-4', 'other-6', 'account-5']  can someone walk my team through the product
+  rank=5  expected=other-9       top3=['other-2', 'account-15', 'technical-11']  is there a user guide or how-to videos
+  rank=6  expected=other-11      top3=['other-6', 'billing-14', 'billing-4']  what SLA do you offer
+
+Not ranked first, hybrid_rerank (14):
+  rank=6  expected=billing-2     top3=['billing-4', 'billing-7', 'billing-15']  need to put a different card on file
+  rank=3  expected=billing-5     top3=['billing-15', 'billing-11', 'billing-5']  my card got declined when the subscription tried to renew
+  rank=3  expected=billing-6     top3=['billing-14', 'billing-8', 'billing-6']  stop my plan so I am not billed next month
+  rank=11  expected=account-1     top3=['technical-11', 'account-5', 'account-0']  permanently remove my profile and everything in it
+  rank=2  expected=account-11    top3=['account-4', 'account-11', 'account-10']  pick a different handle for my profile
+  rank=2  expected=technical-0   top3=['technical-8', 'technical-0', 'technical-5']  app closes by itself right after launch
+  rank=3  expected=technical-3   top3=['technical-6', 'account-4', 'technical-3']  changes on my laptop do not show up on my phone
+  rank=4  expected=technical-13  top3=['technical-11', 'other-6', 'account-15']  is there a night theme
+  rank=2  expected=technical-15  top3=['other-3', 'technical-15', 'technical-1']  can I use the app on a plane without wifi
+  rank=19  expected=other-0       top3=['account-5', 'other-6', 'other-4']  what time is your team available to help
+  rank=2  expected=other-1       top3=['account-6', 'other-1', 'account-12']  how can I reach a human agent
+  rank=6  expected=other-2       top3=['technical-1', 'account-7', 'technical-11']  is there an outage right now
+  rank=3  expected=other-6       top3=['account-5', 'other-4', 'other-6']  can someone walk my team through the product
+  rank=3  expected=other-11      top3=['other-6', 'billing-4', 'other-11']  what SLA do you offer
+
+Not ranked first, (diag) bm25 only (29):
+  rank=4  expected=billing-0     top3=['technical-2', 'technical-14', 'account-1']  I want my money back for something I bought two weeks ago
+  rank=8  expected=billing-1     top3=['other-2', 'technical-2', 'billing-2']  my statement shows the same payment two times
+  rank=None  expected=billing-2     top3=['billing-5', 'billing-7', 'technical-4']  need to put a different card on file
+  rank=2  expected=billing-5     top3=['billing-11', 'billing-5', 'billing-6']  my card got declined when the subscription tried to renew
+  rank=8  expected=billing-6     top3=['billing-11', 'billing-14', 'billing-8']  stop my plan so I am not billed next month
+  rank=2  expected=billing-8     top3=['technical-11', 'billing-8', 'other-6']  move to a cheaper plan
+  rank=3  expected=billing-9     top3=['billing-11', 'billing-4', 'billing-9']  pay yearly instead of every month
+  rank=3  expected=billing-14    top3=['billing-7', 'billing-0', 'billing-14']  refund for a yearly subscription I bought 3 weeks ago
+  rank=None  expected=account-1     top3=['account-5', 'technical-11', 'account-4']  permanently remove my profile and everything in it
+  rank=4  expected=account-3     top3=['technical-2', 'technical-3', 'account-2']  combine two separate profiles into one
+  rank=4  expected=account-11    top3=['account-15', 'account-4', 'technical-9']  pick a different handle for my profile
+  rank=4  expected=account-13    top3=['account-14', 'billing-14', 'account-9']  too many alerts, how do I turn some off
+  rank=11  expected=technical-0   top3=['other-1', 'account-7', 'technical-7']  app closes by itself right after launch
+  rank=None  expected=technical-1   top3=['account-8', 'technical-6', 'account-2']  request times out when loading the dashboard
+  rank=2  expected=technical-2   top3=['technical-6', 'technical-2', 'account-4']  lost the phone with my authenticator app
+  rank=4  expected=technical-3   top3=['technical-6', 'account-4', 'account-12']  changes on my laptop do not show up on my phone
+  rank=3  expected=technical-6   top3=['account-13', 'other-2', 'technical-6']  I don't get push alerts on android
+  rank=3  expected=technical-8   top3=['billing-9', 'technical-0', 'technical-8']  everything is laggy and takes forever to load
+  rank=None  expected=technical-13  top3=['other-2', 'technical-11', 'billing-5']  is there a night theme
+  rank=8  expected=technical-15  top3=['other-3', 'other-1', 'technical-1']  can I use the app on a plane without wifi
+  rank=None  expected=other-0       top3=['other-6', 'other-4', 'account-15']  what time is your team available to help
+  rank=None  expected=other-1       top3=[]  how can I reach a human agent
+  rank=3  expected=other-2       top3=['technical-3', 'technical-1', 'other-2']  is there an outage right now
+  rank=None  expected=other-5       top3=['billing-6', 'technical-3', 'technical-1']  I found a bug that exposes data, who do I tell
+  rank=4  expected=other-6       top3=['other-4', 'account-5', 'account-8']  can someone walk my team through the product
+  rank=None  expected=other-9       top3=['account-15', 'other-2', 'technical-11']  is there a user guide or how-to videos
+  rank=2  expected=other-10      top3=['other-8', 'other-10', 'other-5']  try features before they are released
+  rank=None  expected=other-11      top3=['other-6', 'billing-14']  what SLA do you offer
+  rank=2  expected=account-1     top3=['technical-11', 'account-1', 'account-14']  deleted my account by mistake, can I undo it
+
+Not ranked first, (diag) vector_rerank (13):
+  rank=4  expected=billing-2     top3=['billing-4', 'billing-15', 'billing-5']  need to put a different card on file
+  rank=3  expected=billing-5     top3=['billing-15', 'billing-11', 'billing-5']  my card got declined when the subscription tried to renew
+  rank=2  expected=billing-6     top3=['billing-8', 'billing-6', 'billing-11']  stop my plan so I am not billed next month
+  rank=2  expected=account-1     top3=['technical-11', 'account-1', 'account-5']  permanently remove my profile and everything in it
+  rank=2  expected=account-11    top3=['account-4', 'account-11', 'account-0']  pick a different handle for my profile
+  rank=2  expected=technical-0   top3=['technical-8', 'technical-0', 'technical-5']  app closes by itself right after launch
+  rank=3  expected=technical-3   top3=['technical-6', 'account-4', 'technical-3']  changes on my laptop do not show up on my phone
+  rank=5  expected=technical-13  top3=['other-11', 'other-6', 'billing-4']  is there a night theme
+  rank=2  expected=technical-15  top3=['other-3', 'technical-15', 'technical-1']  can I use the app on a plane without wifi
+  rank=2  expected=other-1       top3=['account-6', 'other-1', 'account-12']  how can I reach a human agent
+  rank=3  expected=other-2       top3=['technical-1', 'billing-5', 'other-2']  is there an outage right now
+  rank=3  expected=other-6       top3=['account-5', 'other-4', 'other-6']  can someone walk my team through the product
+  rank=3  expected=other-11      top3=['billing-4', 'other-7', 'other-11']  what SLA do you offer
