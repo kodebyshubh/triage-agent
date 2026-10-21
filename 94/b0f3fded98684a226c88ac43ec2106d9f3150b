@@ -1,0 +1,136 @@
+app/agents/classifier.py
+  s_15a9959e77d786::t_6ac3b5aa288670 4-44
+eval/phase2_b_fewshot_runs1-2_reconstructed.json
+  s_15a9959e77d786::t_410b6208a904db 1-2232
+eval/fewshot_overlap_check.py
+  s_15a9959e77d786::t_3ee96a97f92ba4 1-82
+eval/phase2_b_fewshot.txt
+  s_15a9959e77d786::t_6eb3c95b4ceb22 1-65
+eval/reconstruct_runs_from_table.py
+  s_15a9959e77d786::t_2a4de29a63ca55 1-87
+eval/fewshot_overlap_check_v1.txt
+  s_15a9959e77d786::t_e80d8c48922d60 1-37
+eval/fewshot_overlap_check_v2.txt
+  s_15a9959e77d786::t_e80d8c48922d60 1-37
+eval/run_eval.py
+  s_15a9959e77d786::t_d1509c690f4630 331-335,338-344,346-347,349,352-353
+  s_15a9959e77d786::t_4e31fb54af47f2 279
+  s_15a9959e77d786::t_677f56bfeac7ef 293-294
+  s_15a9959e77d786::t_0b4e6a505627bd 167-171
+  s_15a9959e77d786::t_934896d3298896 183-188
+  s_15a9959e77d786::t_022072fbd3ca1e 295-297
+  s_15a9959e77d786::t_23227ef24abb03 330
+eval/baseline_before_phase2.txt
+  s_15a9959e77d786::t_32fdb0246e46d8 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "94b0f3fded98684a226c88ac43ec2106d9f3150b",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:94807d8726652211da8426197d1966a104956294e4c9f6e4f4f4199b77d72781",
+      "total_additions": 2665,
+      "total_deletions": 21,
+      "accepted_lines": 2710,
+      "overriden_lines": 1
+    }
+  },
+  "humans": {
+    "h_823967a5b70be2": {
+      "author": "imbohra777 <shubhbohra44@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:94807d8726652211da8426197d1966a104956294e4c9f6e4f4f4199b77d72781",
+      "stats": {
+        "total_additions": 2665,
+        "total_deletions": 21,
+        "accepted_lines": 2710,
+        "overriden_lines": 1,
+        "files": {
+          "CLAUDE.md": {
+            "total_additions": 6,
+            "total_deletions": 0,
+            "accepted_lines": 53,
+            "overriden_lines": 0
+          },
+          "app/agents/classifier.py": {
+            "total_additions": 42,
+            "total_deletions": 5,
+            "accepted_lines": 58,
+            "overriden_lines": 0
+          },
+          "eval/baseline_before_phase2.txt": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 24,
+            "overriden_lines": 1
+          },
+          "eval/fewshot_overlap_check.py": {
+            "total_additions": 82,
+            "total_deletions": 0,
+            "accepted_lines": 82,
+            "overriden_lines": 0
+          },
+          "eval/fewshot_overlap_check.txt": {
+            "total_additions": 42,
+            "total_deletions": 5,
+            "accepted_lines": 0,
+            "overriden_lines": 0
+          },
+          "eval/fewshot_overlap_check_v1.txt": {
+            "total_additions": 37,
+            "total_deletions": 0,
+            "accepted_lines": 37,
+            "overriden_lines": 0
+          },
+          "eval/fewshot_overlap_check_v2.txt": {
+            "total_additions": 37,
+            "total_deletions": 0,
+            "accepted_lines": 37,
+            "overriden_lines": 0
+          },
+          "eval/phase2_b_fewshot.txt": {
+            "total_additions": 65,
+            "total_deletions": 0,
+            "accepted_lines": 65,
+            "overriden_lines": 0
+          },
+          "eval/phase2_b_fewshot_runs1-2_reconstructed.json": {
+            "total_additions": 2232,
+            "total_deletions": 0,
+            "accepted_lines": 2232,
+            "overriden_lines": 0
+          },
+          "eval/reconstruct_runs_from_table.py": {
+            "total_additions": 87,
+            "total_deletions": 0,
+            "accepted_lines": 87,
+            "overriden_lines": 0
+          },
+          "eval/run_eval.py": {
+            "total_additions": 35,
+            "total_deletions": 11,
+            "accepted_lines": 35,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
