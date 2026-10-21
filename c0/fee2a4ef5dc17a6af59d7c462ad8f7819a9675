@@ -1,0 +1,49 @@
+eval/latency_bench.py
+  s_15a9959e77d786::t_0d83d6e647737c 1-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "c0fee2a4ef5dc17a6af59d7c462ad8f7819a9675",
+  "branch": "retry-scope",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:fc5dccab9b1ce4c0f2f04b31bd126b24073f50a58ae43c8b2a175c11b61fb7fc",
+      "total_additions": 100,
+      "total_deletions": 0,
+      "accepted_lines": 100,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:fc5dccab9b1ce4c0f2f04b31bd126b24073f50a58ae43c8b2a175c11b61fb7fc",
+      "stats": {
+        "total_additions": 100,
+        "total_deletions": 0,
+        "accepted_lines": 100,
+        "overriden_lines": 0,
+        "files": {
+          "eval/latency_bench.py": {
+            "total_additions": 100,
+            "total_deletions": 0,
+            "accepted_lines": 100,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
