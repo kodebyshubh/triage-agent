@@ -1,42 +1,27 @@
-frontend/.env.example
-  s_15a9959e77d786::t_732cf4b6926ba6 1-5
 docker-compose.yml
   s_15a9959e77d786::t_799160e8552ae6 1-42
-.dockerignore
-  s_15a9959e77d786::t_367d21e8246206 1-17
-render.yaml
-  s_15a9959e77d786::t_8a8abc0213cddd 1-52
-.env.example
-  s_15a9959e77d786::t_316346d83c5709 1,4-5,16-47
-frontend/.dockerignore
-  s_15a9959e77d786::t_b0196b4ef8f2bb 1-3
-frontend/Dockerfile
-  s_15a9959e77d786::t_5ac31df2026dbe 1-20
-frontend/nginx.conf
-  s_15a9959e77d786::t_e52f259313dcf8 1-15
 Dockerfile
   s_15a9959e77d786::t_e4d90c92e5af32 1-37
+render.yaml
+  s_15a9959e77d786::t_8a8abc0213cddd 1-52
+frontend/.env.example
+  s_15a9959e77d786::t_732cf4b6926ba6 1-5
+frontend/Dockerfile
+  s_15a9959e77d786::t_5ac31df2026dbe 1-20
+.env.example
+  s_15a9959e77d786::t_316346d83c5709 1,4-5,16-47
+frontend/nginx.conf
+  s_15a9959e77d786::t_e52f259313dcf8 1-15
+frontend/.dockerignore
+  s_15a9959e77d786::t_b0196b4ef8f2bb 1-3
+.dockerignore
+  s_15a9959e77d786::t_367d21e8246206 1-17
 ---
 {
   "schema_version": "authorship/3.0.0",
   "autter_version": "2.2.0",
-  "base_commit_sha": "c7999357bb7607e55f1089cab9af885e71a50fcf",
-  "branch": "phase6",
-  "prompts": {
-    "s_15a9959e77d786": {
-      "agent_id": {
-        "tool": "claude",
-        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
-        "model": "claude-opus-5-5"
-      },
-      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
-      "messages_url": "cas:29c2930c404bab995c53f52bd0779c1a40393f586885071536d1fc7de02beb27",
-      "total_additions": 226,
-      "total_deletions": 0,
-      "accepted_lines": 226,
-      "overriden_lines": 0
-    }
-  },
+  "base_commit_sha": "9bb2fde249a07777844137983542d1c55ec2a2f0",
+  "prompts": {},
   "sessions": {
     "s_15a9959e77d786": {
       "agent_id": {
