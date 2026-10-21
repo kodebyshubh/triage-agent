@@ -44,6 +44,8 @@ class AgentTraceStep(BaseModel):
     input: dict
     output: dict
     timestamp: str
+    # Optional, added for observability; older clients can ignore it.
+    latency_ms: float | None = None
 
 
 class TriageResponse(BaseModel):
@@ -66,3 +68,9 @@ class TriageResponse(BaseModel):
     ]
     response: ResolutionDraft | EscalationSummary
     trace: list[AgentTraceStep]
+    # Optional observability fields, filled in by the API layer. Everything above
+    # is unchanged, so existing clients keep working.
+    request_id: str | None = None
+    latency_ms: float | None = None
+    # Provider-reported tokens per model: {model: {input_tokens, output_tokens, total_tokens}}
+    token_usage: dict[str, dict[str, int]] | None = None

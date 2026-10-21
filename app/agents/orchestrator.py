@@ -6,6 +6,7 @@ retrieve_and_draft, and escalate is decided by the model's own reasoning at each
 step, not by if/else logic in this file.
 """
 
+import time
 from datetime import datetime, timezone
 
 from groq import BadRequestError
@@ -62,8 +63,13 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _ms_since(start: float) -> float:
+    return round((time.perf_counter() - start) * 1000, 1)
+
+
 def _build_tools(ticket: TicketInput, trace: list[AgentTraceStep]) -> list[Tool]:
     def _classify_fn(_input: str = "") -> str:
+        start = time.perf_counter()
         result = classify(ticket)
         trace.append(
             AgentTraceStep(
@@ -71,11 +77,13 @@ def _build_tools(ticket: TicketInput, trace: list[AgentTraceStep]) -> list[Tool]
                 input={"user_message": ticket.user_message},
                 output=result.model_dump(),
                 timestamp=_now(),
+                latency_ms=_ms_since(start),
             )
         )
         return result.model_dump_json()
 
     def _retrieve_and_draft_fn(query: str) -> str:
+        start = time.perf_counter()
         retrieval = retrieve(query)
         draft = draft_response(ticket, retrieval)
         trace.append(
@@ -84,11 +92,13 @@ def _build_tools(ticket: TicketInput, trace: list[AgentTraceStep]) -> list[Tool]
                 input={"query": query},
                 output={"retrieval": retrieval.model_dump(), "draft": draft.model_dump()},
                 timestamp=_now(),
+                latency_ms=_ms_since(start),
             )
         )
         return draft.model_dump_json()
 
     def _escalate_fn(reason: str) -> str:
+        start = time.perf_counter()
         summary = escalate(ticket, reason)
         trace.append(
             AgentTraceStep(
@@ -96,6 +106,7 @@ def _build_tools(ticket: TicketInput, trace: list[AgentTraceStep]) -> list[Tool]
                 input={"reason": reason},
                 output=summary.model_dump(),
                 timestamp=_now(),
+                latency_ms=_ms_since(start),
             )
         )
         return summary.model_dump_json()
@@ -142,6 +153,7 @@ def _build_mcp_tools(mcp_tools: list[BaseTool], trace: list[AgentTraceStep]) -> 
         return []
 
     async def _check_account_status_fn(account_id: str) -> str:
+        start = time.perf_counter()
         result = await raw_tool.ainvoke({"account_id": account_id})
         trace.append(
             AgentTraceStep(
@@ -149,6 +161,7 @@ def _build_mcp_tools(mcp_tools: list[BaseTool], trace: list[AgentTraceStep]) -> 
                 input={"account_id": account_id},
                 output=result if isinstance(result, dict) else {"result": result},
                 timestamp=_now(),
+                latency_ms=_ms_since(start),
             )
         )
         return str(result)

@@ -7,6 +7,8 @@ import time
 import httpx
 from dotenv import load_dotenv
 
+from app.observability import RATE_LIMITED
+
 load_dotenv()
 
 GROQ_MODEL = "openai/gpt-oss-20b"
@@ -119,6 +121,7 @@ class _RotatingTransport(httpx.HTTPTransport):
                 return response
             response.read()
             _cooldown_until[(key, model)] = time.monotonic() + _retry_after(response)
+            RATE_LIMITED.labels(model=model or "unknown").inc()
         return response if response is not None else super().handle_request(request)
 
 
@@ -145,6 +148,7 @@ class _AsyncRotatingTransport(httpx.AsyncHTTPTransport):
                 return response
             await response.aread()
             _cooldown_until[(key, model)] = time.monotonic() + _retry_after(response)
+            RATE_LIMITED.labels(model=model or "unknown").inc()
         return response if response is not None else await super().handle_async_request(request)
 
 
