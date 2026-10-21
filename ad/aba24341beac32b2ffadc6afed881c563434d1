@@ -1,0 +1,157 @@
+tests/test_retry_scoping.py
+  s_15a9959e77d786::t_807808cd80a49c 1-94
+tests/test_orchestrator_outcomes.py
+  s_15a9959e77d786::t_407a11f16d3c88 1-135
+requirements-dev.txt
+  s_15a9959e77d786::t_cba67cc3f79b4e 1-2
+tests/helpers.py
+  s_15a9959e77d786::t_7c46de616018ce 1-12
+tests/test_schemas.py
+  s_15a9959e77d786::t_275407e6f6fbc7 1-69
+tests/test_guardrails.py
+  s_15a9959e77d786::t_22b0e5e93975a5 1-118
+.env.example
+  s_15a9959e77d786::t_1d7bdeba91ec5b 13-14
+tests/test_memory.py
+  s_15a9959e77d786::t_152e53c553fc82 1-37
+tests/test_retrieval.py
+  s_15a9959e77d786::t_84793d5ad6c007 1-49
+.github/workflows/ci.yml
+  s_15a9959e77d786::t_4f36e67ad2dbc6 1-21
+README.md
+  s_15a9959e77d786::t_146b7db785a48d 3-4
+  s_15a9959e77d786::t_213148e3b6bcfd 39-50
+.gitignore
+  s_15a9959e77d786::t_cad76773c9a10b 12-13
+pytest.ini
+  s_15a9959e77d786::t_e06cf1b6716f2b 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "adaba24341beac32b2ffadc6afed881c563434d1",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:bb2c0ca20cb3dae8ac4c07f28d53b91b23cb5a4904fbfb299f6e6716930baf08",
+      "total_additions": 600,
+      "total_deletions": 4,
+      "accepted_lines": 596,
+      "overriden_lines": 1
+    }
+  },
+  "humans": {
+    "h_823967a5b70be2": {
+      "author": "imbohra777 <shubhbohra44@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:bb2c0ca20cb3dae8ac4c07f28d53b91b23cb5a4904fbfb299f6e6716930baf08",
+      "stats": {
+        "total_additions": 600,
+        "total_deletions": 4,
+        "accepted_lines": 596,
+        "overriden_lines": 1,
+        "files": {
+          ".env.example": {
+            "total_additions": 3,
+            "total_deletions": 0,
+            "accepted_lines": 2,
+            "overriden_lines": 1
+          },
+          ".github/workflows/ci.yml": {
+            "total_additions": 21,
+            "total_deletions": 0,
+            "accepted_lines": 21,
+            "overriden_lines": 0
+          },
+          ".gitignore": {
+            "total_additions": 3,
+            "total_deletions": 2,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "CLAUDE.md": {
+            "total_additions": 40,
+            "total_deletions": 2,
+            "accepted_lines": 38,
+            "overriden_lines": 0
+          },
+          "README.md": {
+            "total_additions": 14,
+            "total_deletions": 0,
+            "accepted_lines": 14,
+            "overriden_lines": 0
+          },
+          "pytest.ini": {
+            "total_additions": 3,
+            "total_deletions": 0,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          },
+          "requirements-dev.txt": {
+            "total_additions": 2,
+            "total_deletions": 0,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "tests/helpers.py": {
+            "total_additions": 12,
+            "total_deletions": 0,
+            "accepted_lines": 12,
+            "overriden_lines": 0
+          },
+          "tests/test_guardrails.py": {
+            "total_additions": 118,
+            "total_deletions": 0,
+            "accepted_lines": 118,
+            "overriden_lines": 0
+          },
+          "tests/test_memory.py": {
+            "total_additions": 37,
+            "total_deletions": 0,
+            "accepted_lines": 37,
+            "overriden_lines": 0
+          },
+          "tests/test_orchestrator_outcomes.py": {
+            "total_additions": 135,
+            "total_deletions": 0,
+            "accepted_lines": 135,
+            "overriden_lines": 0
+          },
+          "tests/test_retrieval.py": {
+            "total_additions": 49,
+            "total_deletions": 0,
+            "accepted_lines": 49,
+            "overriden_lines": 0
+          },
+          "tests/test_retry_scoping.py": {
+            "total_additions": 94,
+            "total_deletions": 0,
+            "accepted_lines": 94,
+            "overriden_lines": 0
+          },
+          "tests/test_schemas.py": {
+            "total_additions": 69,
+            "total_deletions": 0,
+            "accepted_lines": 69,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
