@@ -10,7 +10,8 @@ from pathlib import Path
 
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
+from groq import RateLimitError
 from langchain_core.callbacks import get_usage_metadata_callback
 from langchain_mcp_adapters.tools import load_mcp_tools
 from mcp import ClientSession, StdioServerParameters
@@ -121,6 +122,19 @@ async def request_context(request: Request, call_next):
             latency_ms=round((time.perf_counter() - start) * 1000, 1),
         )
     return response
+
+
+@app.exception_handler(RateLimitError)
+async def upstream_rate_limited(request: Request, exc: RateLimitError) -> JSONResponse:
+    """Every Groq key stayed rate-limited past GROQ_MAX_RATE_LIMIT_WAIT_S. That is
+    the provider being unavailable, not a server bug, so answer 503 instead of 500."""
+    REQUEST_ERRORS.labels(error_type="RateLimitError").inc()
+    logger.warning("upstream_rate_limited", extra={"fields": {"path": request.url.path}})
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "The LLM provider's rate limit was reached. Retry in a minute."},
+        headers={"Retry-After": "60"},
+    )
 
 
 @app.get("/health")

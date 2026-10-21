@@ -171,3 +171,18 @@ def test_transport_retries_reported_in_response_and_metrics(client, monkeypatch)
     key = 'triage_transport_retries_total{code="json_validate_failed"}'
     assert _metric(after, key) == _metric(before, key) + 1
     assert client.post("/ticket", json=_TICKET).json()["transport_retries"] == {"json_validate_failed": 1}
+
+
+def test_upstream_rate_limit_is_503_not_500(client, monkeypatch):
+    import httpx
+    from groq import RateLimitError
+
+    async def _orch_limited(ticket, history=None, mcp_tools=None, on_step=None):
+        request = httpx.Request("POST", "https://api.groq.com/openai/v1/chat/completions")
+        raise RateLimitError("429", response=httpx.Response(429, request=request), body=None)
+
+    monkeypatch.setattr(main, "run_orchestrator", _orch_limited)
+    resp = client.post("/ticket", json=_TICKET)
+    assert resp.status_code == 503
+    assert resp.headers["Retry-After"] == "60"
+    assert "rate limit" in resp.json()["detail"]

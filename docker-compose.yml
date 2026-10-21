@@ -7,6 +7,7 @@
 #   docker compose up --build
 #   UI:      http://localhost:8080
 #   API:     http://localhost:8000  (docs at /docs, metrics at /metrics)
+#   Host ports are overridable: BACKEND_PORT=8100 FRONTEND_PORT=8180 docker compose up
 services:
   redis:
     image: redis:7-alpine
@@ -22,9 +23,9 @@ services:
     env_file: .env
     environment:
       REDIS_URL: redis://redis:6379/0
-      ALLOWED_ORIGINS: http://localhost:8080
+      ALLOWED_ORIGINS: http://localhost:${FRONTEND_PORT:-8080}
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       redis:
         condition: service_healthy
@@ -33,10 +34,10 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: http://localhost:8000
+        VITE_API_URL: http://localhost:${BACKEND_PORT:-8000}
         VITE_API_KEY: ${VITE_API_KEY:-}
     ports:
-      - "8080:8080"
+      - "${FRONTEND_PORT:-8080}:8080"
     depends_on:
       backend:
         condition: service_healthy
