@@ -1,0 +1,130 @@
+tests/test_role_models.py
+  s_15a9959e77d786::t_6fba6254cb0454 1-25
+app/llm.py
+  s_15a9959e77d786::t_59f4416e055fe3 3,5,7
+  s_15a9959e77d786::t_69fb59af94d094 183-187,192
+  s_15a9959e77d786::t_7658f2af3b17fd 48-83,99-100,102,113-126,128,139-154
+  s_15a9959e77d786::t_4089b06a9e1924 84-98,101,103-112,127,129-138
+  s_15a9959e77d786::t_a4304a5c73d286 14-18
+  s_15a9959e77d786::t_e1f9611d72233c 1
+  s_15a9959e77d786::t_ff4a02446c050d 19-25
+  s_15a9959e77d786::t_b6ace20622edc3 190-191
+  s_15a9959e77d786::t_b73559219ca0d7 225-227,231
+app/agents/orchestrator.py
+  s_15a9959e77d786::t_40af9cfe263d7a 18
+  s_15a9959e77d786::t_3ea2d9f3db39af 33-35
+eval/run_eval.py
+  s_15a9959e77d786::t_13ae08197fb3e7 4-9,11,14,16-18,24-25,35-41,59-75,77-86,88-105,108-173,189,193-195,215,227,237-328,330
+eval/test_tickets.json
+  s_15a9959e77d786::t_3ffae26e8bdcd4 131-444
+app/agents/classifier.py
+  s_15a9959e77d786::t_90a22288507331 1,11
+tests/test_key_rotation_transport.py
+  s_15a9959e77d786::t_2c3b8f68e4e1af 1-61,63-66,85-92
+  s_15a9959e77d786::t_264b07c24905e4 62,67-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "954a30730e71ebcb9ac6fb01e9c270f729c7fcef",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:aebbb27e0955f78294d64120b9a39eec2b35b821d735c5a9d0ed05046a00532a",
+      "total_additions": 955,
+      "total_deletions": 77,
+      "accepted_lines": 1477,
+      "overriden_lines": 2
+    }
+  },
+  "humans": {
+    "h_823967a5b70be2": {
+      "author": "imbohra777 <shubhbohra44@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:aebbb27e0955f78294d64120b9a39eec2b35b821d735c5a9d0ed05046a00532a",
+      "stats": {
+        "total_additions": 955,
+        "total_deletions": 77,
+        "accepted_lines": 1477,
+        "overriden_lines": 2,
+        "files": {
+          "CLAUDE.md": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 39,
+            "overriden_lines": 0
+          },
+          "app/agents/classifier.py": {
+            "total_additions": 43,
+            "total_deletions": 6,
+            "accepted_lines": 4,
+            "overriden_lines": 2
+          },
+          "app/agents/orchestrator.py": {
+            "total_additions": 4,
+            "total_deletions": 4,
+            "accepted_lines": 292,
+            "overriden_lines": 0
+          },
+          "app/llm.py": {
+            "total_additions": 140,
+            "total_deletions": 9,
+            "accepted_lines": 242,
+            "overriden_lines": 0
+          },
+          "eval/baseline_before_phase2.txt": {
+            "total_additions": 25,
+            "total_deletions": 0,
+            "accepted_lines": 25,
+            "overriden_lines": 0
+          },
+          "eval/phase2_a_expanded_before_fewshot.txt": {
+            "total_additions": 81,
+            "total_deletions": 0,
+            "accepted_lines": 81,
+            "overriden_lines": 0
+          },
+          "eval/run_eval.py": {
+            "total_additions": 231,
+            "total_deletions": 58,
+            "accepted_lines": 231,
+            "overriden_lines": 0
+          },
+          "eval/test_tickets.json": {
+            "total_additions": 314,
+            "total_deletions": 0,
+            "accepted_lines": 446,
+            "overriden_lines": 0
+          },
+          "tests/test_key_rotation_transport.py": {
+            "total_additions": 92,
+            "total_deletions": 0,
+            "accepted_lines": 92,
+            "overriden_lines": 0
+          },
+          "tests/test_role_models.py": {
+            "total_additions": 25,
+            "total_deletions": 0,
+            "accepted_lines": 25,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
