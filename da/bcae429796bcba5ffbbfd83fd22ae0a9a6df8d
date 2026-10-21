@@ -1,0 +1,71 @@
+app/llm.py
+  s_15a9959e77d786::t_63c39cd9590e3e 1
+  s_15a9959e77d786::t_089cd488ecaed6 13-31
+  s_15a9959e77d786::t_60b5cf73200e0b 49,61
+  s_15a9959e77d786::t_23a047dde79638 97
+tests/test_key_pool.py
+  s_15a9959e77d786::t_5788cdf2a2bea6 1-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "dabcae429796bcba5ffbbfd83fd22ae0a9a6df8d",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:08e4bbe8b0036d2954b86c74b967b9a25a5978c88f2c761482827a30f62c27da",
+      "total_additions": 53,
+      "total_deletions": 2,
+      "accepted_lines": 179,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_823967a5b70be2": {
+      "author": "imbohra777 <shubhbohra44@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:08e4bbe8b0036d2954b86c74b967b9a25a5978c88f2c761482827a30f62c27da",
+      "stats": {
+        "total_additions": 53,
+        "total_deletions": 2,
+        "accepted_lines": 179,
+        "overriden_lines": 0,
+        "files": {
+          "CLAUDE.md": {
+            "total_additions": 1,
+            "total_deletions": 0,
+            "accepted_lines": 39,
+            "overriden_lines": 0
+          },
+          "app/llm.py": {
+            "total_additions": 23,
+            "total_deletions": 2,
+            "accepted_lines": 111,
+            "overriden_lines": 0
+          },
+          "tests/test_key_pool.py": {
+            "total_additions": 29,
+            "total_deletions": 0,
+            "accepted_lines": 29,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
