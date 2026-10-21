@@ -1,10 +1,11 @@
+import asyncio
 import sys
 import time
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request, Response
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.callbacks import get_usage_metadata_callback
 from langchain_mcp_adapters.tools import load_mcp_tools
@@ -14,6 +15,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.agents.orchestrator import run_orchestrator
 from app.guardrails import run_input_guardrail, run_output_guardrail
+from app import memory
 from app.memory import append_turn, get_history
 from app.observability import (
     FINAL_ACTIONS,
@@ -30,7 +32,14 @@ from app.observability import (
     logger,
     request_id_var,
 )
-from app.schemas import EscalationSummary, ResolutionDraft, TicketInput, TriageResponse
+from app.schemas import (
+    EscalationSummary,
+    ResolutionDraft,
+    TicketInput,
+    TicketRequest,
+    TriageResponse,
+)
+from app.security import auth_enabled, require_api_key
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -40,7 +49,14 @@ _TRACING = configure_tracing()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    log_event("startup", langsmith_tracing=_TRACING)
+    log_event(
+        "startup",
+        langsmith_tracing=_TRACING,
+        session_store=memory.backend(),
+        api_key_auth=auth_enabled(),
+    )
+    if not auth_enabled():
+        logger.warning("TRIAGEFORGE_API_KEYS is empty: API key auth is OFF (rate limit applies per client IP).")
     # MCP session held open for the app's lifetime (not reconnected per ticket)
     # so a per-request tool call doesn't pay subprocess-spawn latency on top of
     # the pipeline's already-documented sequential-LLM-call bottleneck.
@@ -113,7 +129,12 @@ async def _timed(step: str, coro):
 
 
 async def _triage(ticket: TicketInput) -> TriageResponse:
-    guardrail_result = await _timed("input_guardrail", run_input_guardrail(ticket.user_message))
+    # Session history is fetched while the input guardrail runs. It is only read
+    # after the guardrail passes, so overlapping the two is safe.
+    guardrail_result, history = await asyncio.gather(
+        _timed("input_guardrail", run_input_guardrail(ticket.user_message)),
+        asyncio.to_thread(get_history, ticket.session_id),
+    )
     for flag in guardrail_result.flags:
         GUARDRAIL_FLAGS.labels(flag=flag).inc()
 
@@ -128,7 +149,6 @@ async def _triage(ticket: TicketInput) -> TriageResponse:
     safe_ticket = ticket.model_copy(
         update={"user_message": guardrail_result.redacted_message}
     )
-    history = get_history(ticket.session_id)
 
     response = await run_orchestrator(safe_ticket, history=history, mcp_tools=app.state.mcp_tools)
 
@@ -157,8 +177,8 @@ async def _triage(ticket: TicketInput) -> TriageResponse:
     return response
 
 
-@app.post("/ticket", response_model=TriageResponse)
-async def submit_ticket(ticket: TicketInput, request: Request) -> TriageResponse:
+@app.post("/ticket", response_model=TriageResponse, dependencies=[Depends(require_api_key)])
+async def submit_ticket(ticket: TicketRequest, request: Request) -> TriageResponse:
     start = time.perf_counter()
     with get_usage_metadata_callback() as usage:
         response = await _triage(ticket)

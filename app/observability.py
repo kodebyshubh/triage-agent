@@ -76,6 +76,9 @@ REQUEST_ERRORS = Counter(
 RATE_LIMITED = Counter(
     "triage_groq_rate_limited_total", "Groq 429 responses seen at the HTTP transport.", ["model"]
 )
+CLASSIFY_CACHE = Counter(
+    "triage_classify_cache_total", "classify() cache lookups.", ["result"]
+)
 LLM_TOKENS = Counter(
     "triage_llm_tokens_total", "LLM tokens reported by the provider.", ["model", "kind"]
 )

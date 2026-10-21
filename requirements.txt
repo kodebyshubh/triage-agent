@@ -11,3 +11,4 @@ mcp
 langchain-mcp-adapters
 rank_bm25
 prometheus_client
+redis

@@ -1,12 +1,26 @@
+import os
 from typing import Literal
 
 from pydantic import BaseModel, Field
+
+MAX_USER_MESSAGE_CHARS = int(os.getenv("MAX_USER_MESSAGE_CHARS", "4000"))
 
 
 class TicketInput(BaseModel):
     ticket_id: str
     user_message: str
     session_id: str
+
+
+class TicketRequest(TicketInput):
+    """API request body. Same fields as TicketInput, plus input limits enforced at
+    the API boundary only (a 422 before any LLM call). Kept off TicketInput itself
+    because PII redaction can lengthen a stored message, and reloading session
+    history must never fail validation."""
+
+    ticket_id: str = Field(max_length=200)
+    user_message: str = Field(max_length=MAX_USER_MESSAGE_CHARS)
+    session_id: str = Field(max_length=200)
 
 
 class GuardrailResult(BaseModel):

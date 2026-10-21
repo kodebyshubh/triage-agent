@@ -1,3 +1,4 @@
+import asyncio
 import re
 
 from app.llm import ainvoke_llm
@@ -63,6 +64,7 @@ def _output_leak_heuristic(text: str) -> bool:
 
 
 async def run_output_guardrail(response_text: str) -> bool:
+    # Deliberately sequential: a heuristic hit skips the LLM call entirely.
     if _output_leak_heuristic(response_text):
         return False
 
@@ -83,6 +85,10 @@ async def run_output_guardrail(response_text: str) -> bool:
 async def run_input_guardrail(text: str) -> GuardrailResult:
     flags: list[str] = []
 
+    # The three checks are independent, so the LLM call starts first and the
+    # regex checks run while it is in flight. All three still always run.
+    llm_task = asyncio.create_task(llm_injection_check(text))
+
     redacted = redact_pii(text)
     if redacted != text:
         flags.append("pii_redacted")
@@ -91,7 +97,7 @@ async def run_input_guardrail(text: str) -> GuardrailResult:
     if heuristic_flag:
         flags.append("injection_heuristic")
 
-    llm_flag = await llm_injection_check(text)
+    llm_flag = await llm_task
     if llm_flag:
         flags.append("injection_llm")
 

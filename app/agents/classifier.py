@@ -1,5 +1,6 @@
 from app.llm import ROLE_MODELS, get_chat_model, invoke_structured_with_retry
 from app.schemas import ClassificationResult, TicketInput
+from app.agents import classify_cache
 
 # Few-shot calibration for urgency. The eval found the classifier scoring any
 # frustrated-sounding ticket as urgency 5, which then (correctly, per its rules)
@@ -56,3 +57,8 @@ def classify(ticket: TicketInput) -> ClassificationResult:
             ("human", ticket.user_message),
         ],
     )
+
+
+# Identical messages reuse a recent result (see classify_cache.py). Applied here so
+# every caller, including the orchestrator's classify tool, gets it.
+classify = classify_cache.cached(classify, lambda: ROLE_MODELS["classifier"])
