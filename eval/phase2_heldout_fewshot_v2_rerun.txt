@@ -1,0 +1,78 @@
+
+=== Run 4/4 ===
+ticket_id                   exp_action   act_action   action_ok exp_cat   act_cat   guardrail_ok lookup_ok 
+-----------------------------------------------------------------------------------------------------------
+ho_refund_fed_up            auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_double_charge_caps       auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_crash_annoyed            auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_timeout_irritated        auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_password_frustrated      auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_sync_driving_nuts        auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_invoice_pdf              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_switch_card              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_email_work_address       auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_close_account            auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_2fa_switched_phones      auto_resolvedauto_resolvedOK         technical account   OK           -         
+ho_saved_card_fraud         escalated    escalated    OK         billing   account   OK           -         
+ho_unknown_logins           escalated    escalated    OK         account   account   OK           -         
+ho_clinic_outage            escalated    escalated    OK         technical technical OK           -         
+ho_consumer_court           escalated    auto_resolvedFAIL       billing   billing   OK           -         
+ho_client_records_gone      escalated    auto_resolvedFAIL       technical technical OK           -         
+ho_vague_call_me            escalated    escalated    OK         other     technical OK           -         
+ho_hackathon_sponsor        escalated    escalated    OK         other     other     OK           -         
+ho_lookup_invoice           auto_resolvedauto_resolvedOK         billing   billing   OK           OK        
+ho_lookup_charged_thrice    escalated    escalated    OK         billing   billing   OK           OK        
+-----------------------------------------------------------------------------------------------------------
+Routing match:        18/20 (90%)
+Guardrail match:      20/20 (100%)
+Transport errors:     0/20 (excluded from routing match)
+Output-blocked:       0/20 (excluded from routing match)
+Incomplete lookup:    0/20 (excluded from routing match)
+HTTP errors:          0/20 (request failed, excluded from routing match)
+Account lookup match: 2/2 (100%) (only tickets declaring expect_account_lookup; additive metric, doesn't affect routing/guardrail match above)
+
+=== Aggregate over 1 run(s) ===
+
+ticket_id                         exp   actual per run                urgency     ok    
+----------------------------------------------------------------------------------------
+ho_refund_fed_up                  auto  auto                          2           1/1
+ho_double_charge_caps             auto  auto                          3           1/1
+ho_crash_annoyed                  auto  auto                          2           1/1
+ho_timeout_irritated              auto  auto                          3           1/1
+ho_password_frustrated            auto  auto                          2           1/1
+ho_sync_driving_nuts              auto  auto                          2           1/1
+ho_invoice_pdf                    auto  auto                          1           1/1
+ho_switch_card                    auto  auto                          1           1/1
+ho_email_work_address             auto  auto                          1           1/1
+ho_close_account                  auto  auto                          1           1/1
+ho_2fa_switched_phones            auto  auto                          2           1/1
+ho_saved_card_fraud               esc   esc                           5           1/1
+ho_unknown_logins                 esc   esc                           5           1/1
+ho_clinic_outage                  esc   esc                           5           1/1
+ho_consumer_court                 esc   auto                          3           0/1
+ho_client_records_gone            esc   auto                          4           0/1
+ho_vague_call_me                  esc   esc                           2           1/1
+ho_hackathon_sponsor              esc   esc                           1           1/1
+ho_lookup_invoice                 auto  auto                          1           1/1
+ho_lookup_charged_thrice          esc   esc                           4           1/1
+
+Per-run metrics, all tickets (n=20 tickets x 1 runs)
+  routing_match         mean  90.0%  sd  0.0%  min  90.0%  max  90.0%
+  guardrail_match       mean 100.0%  sd  0.0%  min 100.0%  max 100.0%
+  transport_error       mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  output_blocked        mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  incomplete_lookup     mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  http_error            mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  account_lookup_match  mean 100.0%  sd  0.0%  min 100.0%  max 100.0%
+  category_match        mean  85.0%  sd  0.0%  min  85.0%  max  85.0%
+  routing_match_decided mean  90.0%  sd  0.0%  min  90.0%  max  90.0%
+
+Failure-mode rates, pooled over all ticket-runs (n=20)
+  over-escalation (exp auto, got escalated)      0/20 (0.0%)
+  under-escalation (exp escalated, got auto)     2/20 (10.0%)
+  escalated_due_to_error (transport)             0/20 (0.0%)
+  escalated_output_blocked                       0/20 (0.0%)
+  escalated_incomplete_lookup                    0/20 (0.0%)
+  http_error (request failed)                    0/20 (0.0%)
+  category mismatch                              3/20 (15.0%)
+  guardrail mismatch                             0/20 (0.0%)

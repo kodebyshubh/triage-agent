@@ -1,0 +1,47 @@
+Merged 3 run(s) from: eval\phase2_heldout_fewshot_v2_runs2-3.json, eval\phase2_heldout_fewshot_v2_rerun.json
+
+=== Aggregate over 3 run(s) ===
+
+ticket_id                         exp   actual per run                urgency     ok    
+----------------------------------------------------------------------------------------
+ho_refund_fed_up                  auto  auto/auto/auto                2/2/2       3/3
+ho_double_charge_caps             auto  auto/auto/auto                3/3/3       3/3
+ho_crash_annoyed                  auto  auto/auto/auto                2/2/2       3/3
+ho_timeout_irritated              auto  auto/auto/auto                2/2/3       3/3
+ho_password_frustrated            auto  auto/auto/auto                2/2/2       3/3
+ho_sync_driving_nuts              auto  auto/auto/auto                2/2/2       3/3
+ho_invoice_pdf                    auto  auto/auto/auto                1/1/1       3/3
+ho_switch_card                    auto  auto/auto/auto                2/1/1       3/3
+ho_email_work_address             auto  auto/auto/auto                1/1/1       3/3
+ho_close_account                  auto  auto/auto/auto                1/1/1       3/3
+ho_2fa_switched_phones            auto  auto/auto/auto                2/2/2       3/3
+ho_saved_card_fraud               esc   esc/esc/esc                   5/5/5       3/3
+ho_unknown_logins                 esc   esc/esc/esc                   5/5/5       3/3
+ho_clinic_outage                  esc   esc/esc/esc                   5/5/5       3/3
+ho_consumer_court                 esc   auto/auto/auto                3/3/3       0/3
+ho_client_records_gone            esc   auto/esc/auto                 4/4/4       1/3
+ho_vague_call_me                  esc   esc/esc/esc                   2/2/2       3/3
+ho_hackathon_sponsor              esc   esc/esc/esc                   1/1/1       3/3
+ho_lookup_invoice                 auto  auto/auto/auto                1/1/1       3/3
+ho_lookup_charged_thrice          esc   esc/esc/esc                   4/4/4       3/3
+
+Per-run metrics, all tickets (n=20 tickets x 3 runs)
+  routing_match         mean  91.7%  sd  2.9%  min  90.0%  max  95.0%
+  guardrail_match       mean 100.0%  sd  0.0%  min 100.0%  max 100.0%
+  transport_error       mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  output_blocked        mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  incomplete_lookup     mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  http_error            mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  account_lookup_match  mean 100.0%  sd  0.0%  min 100.0%  max 100.0%
+  category_match        mean  85.0%  sd  0.0%  min  85.0%  max  85.0%
+  routing_match_decided mean  91.7%  sd  2.9%  min  90.0%  max  95.0%
+
+Failure-mode rates, pooled over all ticket-runs (n=60)
+  over-escalation (exp auto, got escalated)      0/60 (0.0%)
+  under-escalation (exp escalated, got auto)     5/60 (8.3%)
+  escalated_due_to_error (transport)             0/60 (0.0%)
+  escalated_output_blocked                       0/60 (0.0%)
+  escalated_incomplete_lookup                    0/60 (0.0%)
+  http_error (request failed)                    0/60 (0.0%)
+  category mismatch                              9/60 (15.0%)
+  guardrail mismatch                             0/60 (0.0%)

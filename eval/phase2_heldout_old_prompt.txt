@@ -1,0 +1,142 @@
+
+=== Run 1/3 ===
+ticket_id                   exp_action   act_action   action_ok exp_cat   act_cat   guardrail_ok lookup_ok 
+-----------------------------------------------------------------------------------------------------------
+ho_refund_fed_up            auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_double_charge_caps       auto_resolvedescalated    FAIL       billing   billing   OK           -         
+ho_crash_annoyed            auto_resolvedescalated    FAIL       technical technical OK           -         
+ho_timeout_irritated        auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_password_frustrated      auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_sync_driving_nuts        auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_invoice_pdf              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_switch_card              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_email_work_address       auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_close_account            auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_2fa_switched_phones      auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_saved_card_fraud         escalated    escalated    OK         billing   billing   OK           -         
+ho_unknown_logins           escalated    escalated    OK         account   account   OK           -         
+ho_clinic_outage            escalated    escalated    OK         technical technical OK           -         
+ho_consumer_court           escalated    auto_resolvedFAIL       billing   billing   OK           -         
+ho_client_records_gone      escalated    escalated    OK         technical technical OK           -         
+ho_vague_call_me            escalated    escalated    OK         other     technical OK           -         
+ho_hackathon_sponsor        escalated    escalated    OK         other     other     OK           -         
+ho_lookup_invoice           auto_resolvedauto_resolvedOK         billing   billing   OK           OK        
+ho_lookup_charged_thrice    escalated    escalated    OK         billing   billing   OK           OK        
+-----------------------------------------------------------------------------------------------------------
+Routing match:        17/20 (85%)
+Guardrail match:      20/20 (100%)
+Transport errors:     0/20 (excluded from routing match)
+Output-blocked:       0/20 (excluded from routing match)
+Incomplete lookup:    0/20 (excluded from routing match)
+HTTP errors:          0/20 (request failed, excluded from routing match)
+Account lookup match: 2/2 (100%) (only tickets declaring expect_account_lookup; additive metric, doesn't affect routing/guardrail match above)
+
+=== Run 2/3 ===
+ticket_id                   exp_action   act_action   action_ok exp_cat   act_cat   guardrail_ok lookup_ok 
+-----------------------------------------------------------------------------------------------------------
+ho_refund_fed_up            auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_double_charge_caps       auto_resolvedescalated    FAIL       billing   billing   OK           -         
+ho_crash_annoyed            auto_resolvedescalated    FAIL       technical technical OK           -         
+ho_timeout_irritated        auto_resolvedescalated    FAIL       technical technical OK           -         
+ho_password_frustrated      auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_sync_driving_nuts        auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_invoice_pdf              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_switch_card              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_email_work_address       auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_close_account            auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_2fa_switched_phones      auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_saved_card_fraud         escalated    escalated    OK         billing   billing   OK           -         
+ho_unknown_logins           escalated    escalated    OK         account   account   OK           -         
+ho_clinic_outage            escalated    escalated    OK         technical technical OK           -         
+ho_consumer_court           escalated    auto_resolvedFAIL       billing   billing   OK           -         
+ho_client_records_gone      escalated    escalated    OK         technical technical OK           -         
+ho_vague_call_me            escalated    escalated    OK         other     technical OK           -         
+ho_hackathon_sponsor        escalated    escalated    OK         other     other     OK           -         
+ho_lookup_invoice           auto_resolvedauto_resolvedOK         billing   billing   OK           OK        
+ho_lookup_charged_thrice    escalated    escalated    OK         billing   billing   OK           OK        
+-----------------------------------------------------------------------------------------------------------
+Routing match:        16/20 (80%)
+Guardrail match:      20/20 (100%)
+Transport errors:     0/20 (excluded from routing match)
+Output-blocked:       0/20 (excluded from routing match)
+Incomplete lookup:    0/20 (excluded from routing match)
+HTTP errors:          0/20 (request failed, excluded from routing match)
+Account lookup match: 2/2 (100%) (only tickets declaring expect_account_lookup; additive metric, doesn't affect routing/guardrail match above)
+
+=== Run 3/3 ===
+ticket_id                   exp_action   act_action   action_ok exp_cat   act_cat   guardrail_ok lookup_ok 
+-----------------------------------------------------------------------------------------------------------
+ho_refund_fed_up            auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_double_charge_caps       auto_resolvedescalated    FAIL       billing   billing   OK           -         
+ho_crash_annoyed            auto_resolvedescalated    FAIL       technical technical OK           -         
+ho_timeout_irritated        auto_resolvedescalated    FAIL       technical technical OK           -         
+ho_password_frustrated      auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_sync_driving_nuts        auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_invoice_pdf              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_switch_card              auto_resolvedauto_resolvedOK         billing   billing   OK           -         
+ho_email_work_address       auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_close_account            auto_resolvedauto_resolvedOK         account   account   OK           -         
+ho_2fa_switched_phones      auto_resolvedauto_resolvedOK         technical technical OK           -         
+ho_saved_card_fraud         escalated    escalated    OK         billing   billing   OK           -         
+ho_unknown_logins           escalated    escalated    OK         account   account   OK           -         
+ho_clinic_outage            escalated    escalated    OK         technical technical OK           -         
+ho_consumer_court           escalated    auto_resolvedFAIL       billing   billing   OK           -         
+ho_client_records_gone      escalated    escalated    OK         technical technical OK           -         
+ho_vague_call_me            escalated    escalated    OK         other     technical OK           -         
+ho_hackathon_sponsor        escalated    escalated    OK         other     other     OK           -         
+ho_lookup_invoice           auto_resolvedauto_resolvedOK         billing   billing   OK           OK        
+ho_lookup_charged_thrice    escalated    escalated    OK         billing   account   OK           OK        
+-----------------------------------------------------------------------------------------------------------
+Routing match:        16/20 (80%)
+Guardrail match:      20/20 (100%)
+Transport errors:     0/20 (excluded from routing match)
+Output-blocked:       0/20 (excluded from routing match)
+Incomplete lookup:    0/20 (excluded from routing match)
+HTTP errors:          0/20 (request failed, excluded from routing match)
+Account lookup match: 2/2 (100%) (only tickets declaring expect_account_lookup; additive metric, doesn't affect routing/guardrail match above)
+
+=== Aggregate over 3 run(s) ===
+
+ticket_id                         exp   actual per run                urgency     ok    
+----------------------------------------------------------------------------------------
+ho_refund_fed_up                  auto  auto/auto/auto                3/3/3       3/3
+ho_double_charge_caps             auto  esc/esc/esc                   4/4/4       0/3
+ho_crash_annoyed                  auto  esc/esc/esc                   4/4/4       0/3
+ho_timeout_irritated              auto  auto/esc/esc                  4/5/4       1/3
+ho_password_frustrated            auto  auto/auto/auto                3/3/3       3/3
+ho_sync_driving_nuts              auto  auto/auto/auto                3/3/3       3/3
+ho_invoice_pdf                    auto  auto/auto/auto                2/2/2       3/3
+ho_switch_card                    auto  auto/auto/auto                2/2/2       3/3
+ho_email_work_address             auto  auto/auto/auto                1/2/1       3/3
+ho_close_account                  auto  auto/auto/auto                2/2/2       3/3
+ho_2fa_switched_phones            auto  auto/auto/auto                3/3/3       3/3
+ho_saved_card_fraud               esc   esc/esc/esc                   5/5/5       3/3
+ho_unknown_logins                 esc   esc/esc/esc                   5/5/5       3/3
+ho_clinic_outage                  esc   esc/esc/esc                   5/5/5       3/3
+ho_consumer_court                 esc   auto/auto/auto                5/5/5       0/3
+ho_client_records_gone            esc   esc/esc/esc                   5/5/5       3/3
+ho_vague_call_me                  esc   esc/esc/esc                   5/5/5       3/3
+ho_hackathon_sponsor              esc   esc/esc/esc                   1/1/1       3/3
+ho_lookup_invoice                 auto  auto/auto/auto                2/2/2       3/3
+ho_lookup_charged_thrice          esc   esc/esc/esc                   5/5/5       3/3
+
+Per-run metrics, all tickets (n=20 tickets x 3 runs)
+  routing_match         mean  81.7%  sd  2.9%  min  80.0%  max  85.0%
+  guardrail_match       mean 100.0%  sd  0.0%  min 100.0%  max 100.0%
+  transport_error       mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  output_blocked        mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  incomplete_lookup     mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  http_error            mean   0.0%  sd  0.0%  min   0.0%  max   0.0%
+  account_lookup_match  mean 100.0%  sd  0.0%  min 100.0%  max 100.0%
+  category_match        mean  93.3%  sd  2.9%  min  90.0%  max  95.0%
+  routing_match_decided mean  81.7%  sd  2.9%  min  80.0%  max  85.0%
+
+Failure-mode rates, pooled over all ticket-runs (n=60)
+  over-escalation (exp auto, got escalated)      8/60 (13.3%)
+  under-escalation (exp escalated, got auto)     3/60 (5.0%)
+  escalated_due_to_error (transport)             0/60 (0.0%)
+  escalated_output_blocked                       0/60 (0.0%)
+  escalated_incomplete_lookup                    0/60 (0.0%)
+  http_error (request failed)                    0/60 (0.0%)
+  category mismatch                              4/60 (6.7%)
+  guardrail mismatch                             0/60 (0.0%)
