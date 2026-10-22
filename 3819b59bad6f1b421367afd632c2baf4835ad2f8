@@ -1,0 +1,58 @@
+Dockerfile
+  s_15a9959e77d786::t_d1c53fe6cd1ec2 8-9
+app/main.py
+  s_15a9959e77d786::t_2ccc7c5787a6e5 127-139
+  s_15a9959e77d786::t_24f80e4d02bf09 13-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "ee314dc0320a1847d799f15840b6c6d3dabb2f08",
+  "branch": "retry-scope",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:9656dfca1052cd15c5f82043fee28e03126d57941790a0a922bf7927eaee3e02",
+      "total_additions": 17,
+      "total_deletions": 2,
+      "accepted_lines": 312,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:9656dfca1052cd15c5f82043fee28e03126d57941790a0a922bf7927eaee3e02",
+      "stats": {
+        "total_additions": 17,
+        "total_deletions": 2,
+        "accepted_lines": 312,
+        "overriden_lines": 0,
+        "files": {
+          "Dockerfile": {
+            "total_additions": 2,
+            "total_deletions": 1,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "app/main.py": {
+            "total_additions": 15,
+            "total_deletions": 1,
+            "accepted_lines": 310,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}

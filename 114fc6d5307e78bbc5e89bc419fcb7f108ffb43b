@@ -1,0 +1,74 @@
+app/main.py
+  s_15a9959e77d786::t_0ab71ff5400654 278-284
+tests/test_streaming.py
+  s_15a9959e77d786::t_33925e12907507 1-102
+app/agents/orchestrator.py
+  s_15a9959e77d786::t_5121802d783c61 10
+  s_15a9959e77d786::t_9d5fac4ac7b773 200-214,219,230-232
+frontend/src/App.jsx
+  s_15a9959e77d786::t_35dd8f0f4ee2e6 28-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "74baad2f1bb9ae46c2536ce014d03a451d4d6b9e",
+  "branch": "phase7",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:3b55874792a6bfa71b0a9fbb902004741bb7adf708f9f3e21cc29043b17781be",
+      "total_additions": 128,
+      "total_deletions": 15,
+      "accepted_lines": 432,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:3b55874792a6bfa71b0a9fbb902004741bb7adf708f9f3e21cc29043b17781be",
+      "stats": {
+        "total_additions": 128,
+        "total_deletions": 15,
+        "accepted_lines": 432,
+        "overriden_lines": 0,
+        "files": {
+          "app/agents/orchestrator.py": {
+            "total_additions": 20,
+            "total_deletions": 1,
+            "accepted_lines": 324,
+            "overriden_lines": 0
+          },
+          "app/main.py": {
+            "total_additions": 5,
+            "total_deletions": 9,
+            "accepted_lines": 5,
+            "overriden_lines": 0
+          },
+          "frontend/src/App.jsx": {
+            "total_additions": 2,
+            "total_deletions": 5,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "tests/test_streaming.py": {
+            "total_additions": 101,
+            "total_deletions": 0,
+            "accepted_lines": 101,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
