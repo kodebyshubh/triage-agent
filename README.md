@@ -4,59 +4,215 @@
 
 Agentic support-ticket triage system: ingests a ticket, runs it through an input
 guardrail, an Orchestrator agent that genuinely delegates to Classifier /
-Retriever+Responder / Escalator tools via LangChain tool-calling, then an output
-guardrail, and returns a structured `TriageResponse` with a full agent trace.
+Retriever+Responder / Escalator tools (plus an account lookup over MCP) via
+LangChain tool-calling, then an output guardrail, and returns a structured
+`TriageResponse` with a full agent trace.
 
 Built as a portfolio project demonstrating real multi-agent delegation, a guardrail
-layer, and Pydantic-enforced structured output at every agent boundary - explicitly
-scoped as demo-grade, not production-grade.
+layer, Pydantic-enforced structured output at every agent boundary, and an eval
+harness that every claim below is measured with. Scoped as demo-grade: it runs on
+Groq's free tier, and the numbers are from hand-written test sets, not production
+traffic.
 
-## Setup
+## Architecture
+
+```mermaid
+flowchart LR
+    UI["React UI<br/>(SSE live trace)"] -->|"POST /ticket or /ticket/stream<br/>X-API-Key"| API
+
+    subgraph API["FastAPI backend"]
+        direction LR
+        SEC["Auth, rate limit,<br/>422 input limits"] --> IG["Input guardrail<br/>PII redaction + injection<br/>(regex + LLM)"]
+        IG -->|safe| ORCH["Orchestrator agent<br/>(LangChain create_agent)"]
+        IG -->|unsafe| REJ["escalated,<br/>empty trace"]
+        ORCH -->|tool calls| T1["classify"]
+        ORCH --> T2["retrieve_and_draft"]
+        ORCH --> T3["escalate"]
+        ORCH --> T4["check_account_status"]
+        ORCH --> OG["Output guardrail<br/>(regex + LLM)"]
+    end
+
+    T2 --> KB[("ChromaDB<br/>60 KB chunks")]
+    T4 <-->|"MCP over stdio"| MCP["MCP server<br/>(subprocess)"]
+    API <--> REDIS[("Redis<br/>sessions + rate limit")]
+    API --> OBS["/metrics (Prometheus),<br/>JSON logs, LangSmith"]
+    T1 & T2 & T3 & ORCH & IG & OG -.->|"Groq API, key pool<br/>with 429 failover"| GROQ["Groq<br/>gpt-oss-20b"]
+```
+
+The orchestrator decides which tool to call from rules in its system prompt and the
+tool outputs it sees; there is no `if/else` routing in code. Every tool output is a
+validated Pydantic model, and a ticket that cannot be resolved ends in one of four
+distinct outcomes (`escalated`, `escalated_due_to_error`, `escalated_output_blocked`,
+`escalated_incomplete_lookup`) that are never merged in the metrics.
+
+## Results
+
+Every number here is copied from a saved run output in `eval/`. Routing match means
+the final action (auto-resolve vs escalate) matched the ticket's label; "x3" means
+each ticket ran three times and the table shows the mean and spread of the per-run
+scores.
+
+### Routing accuracy (urgency calibration in `classify()`)
+
+| Run | Test set | Routing match | Source |
+|---|---|---|---|
+| Baseline, before any changes | original 16 tickets, x1 | 8/16 (50%) | `eval/baseline_before_phase2.txt` |
+| Run A, old classifier prompt | 53 tickets, x3 | mean 56.6% (sd 15.0) | `eval/phase2_a_before_fewshot.txt` |
+| **Run C, few-shot prompt** | 53 tickets, x3 | **mean 88.1% (sd 1.1, range 86.8 to 88.7)** | `eval/phase2_c_fewshot_v2.txt` |
+| Held-out, old prompt | 20 new tickets, x3 | mean 81.7% (sd 2.9) | `eval/phase2_heldout_old_prompt.txt` |
+| **Held-out, few-shot prompt** | 20 new tickets, x3 | **mean 91.7% (sd 2.9, range 90 to 95)** | `eval/phase2_heldout_fewshot_v2_merged.txt` |
+
+The few-shot prompt was developed while looking at the 53-ticket set, so the
+held-out set is the cleaner generalization number: its 20 tickets were written after
+the prompt was frozen and committed (`94b0f3f`, then `eval/heldout_tickets.json`).
+`eval/fewshot_overlap_check.py` confirms no few-shot example is a near-duplicate of
+any eval or held-out ticket, with thresholds fixed before the first check
+(`eval/fewshot_overlap_check_v1.txt` flagged one example, which was replaced:
+`eval/fewshot_overlap_check_v2.txt`, `eval/fewshot_overlap_check_v2_with_heldout.txt`).
+
+What changed, by failure mode (pooled over all ticket-runs):
+
+| | Run A | Run C | Held-out old | Held-out few-shot |
+|---|---|---|---|---|
+| Over-escalation (minor ticket escalated) | 35/159 (22.0%) | 5/159 (3.1%) | 8/60 | 0/60 |
+| Under-escalation (urgent ticket auto-resolved) | 9/159 (5.7%) | 12/159 (7.5%) | 3/60 | 5/60 |
+| HTTP errors | 25/159 (15.7%) | 1/159 (0.6%) | 0/60 | 0/60 |
+
+The calibration removes tone-driven over-escalation (a frustrated but minor ticket
+no longer gets urgency 4 or 5) at the cost of a few more genuinely urgent tickets
+being rated too low, for example a legal threat rated urgency 3. Of run A's 25 HTTP
+errors, 21 were Groq daily-limit 429s that outlasted the 300 s key wait, 3 were
+malformed structured output and 1 was the orchestrator's unrecognized-trace
+`RuntimeError` (`eval/errors_before_retry_change.txt`). Because errors count as
+misses in routing match, the eval also reports `routing_match_decided`, which
+leaves them out of the denominator (A: 67.3%, from the saved run A rows re-scored in
+`eval/phase2_a_before_fewshot_reaggregated.txt`; C: 89.2%).
+
+Run history, kept rather than tidied away:
+- Run B used the first version of the few-shot prompt (runs 1 and 2: 47/53 and
+  45/53, `eval/phase2_b_fewshot.txt`). Its run 3 was aborted on purpose once one
+  example was found to be a near-duplicate, and its server was stopped mid-run, so
+  run 3 in `eval/phase2_b_fewshot.json` is invalid. Runs 1 and 2 had first been
+  rebuilt from the printed tables (`eval/reconstruct_runs_from_table.py`,
+  `eval/phase2_b_fewshot_runs1-2_reconstructed.json`) before the original JSON
+  turned up; the rebuild matched it with zero field differences.
+- `eval/phase2_invalid_rate_limited_run.txt`: an early 53x3 attempt invalidated by
+  rate limits (49/159 HTTP errors), not used for any comparison.
+- Held-out few-shot run 1 lost 12 of 20 requests to a network outage on this
+  machine (`getaddrinfo failed`); kept as `..._run1_network_errors.*`, rerun once, and
+  merged with the original runs 2 and 3.
+
+### Model screens (single run, 53 tickets)
+
+| Change | Routing match | Source | Decision |
+|---|---|---|---|
+| Orchestrator on `qwen/qwen3.8-27b` | 47/53 (88.7%) | `eval/phase2_screen_orch_qwen.txt` | Inside run C's range; not clearly better, not adopted |
+
+Default stays `openai/gpt-oss-20b` for every role. Any role can be switched with
+`MODEL_<ROLE>` (`classifier`, `responder`, `escalator`, `orchestrator`, `guardrail`).
+
+### Retrieval (`eval/retrieval_eval_results.txt`, 72 labeled queries)
+
+| Mode | hit@1 | hit@3 | MRR |
+|---|---|---|---|
+| **Vector (default)** | **86.1%** | **98.6%** | **0.925** |
+| Hybrid (BM25 + vector, reciprocal rank fusion) | 73.6% | 88.9% | 0.817 |
+| Hybrid + cross-encoder re-rank | 80.6% | 93.1% | 0.867 |
+
+A negative result: on this 60-chunk FAQ knowledge base, hybrid retrieval and
+re-ranking both scored below plain vector search, so vector stays the default and
+the other two are opt-in (`RETRIEVAL_MODE`). On the 12 keyword-style queries every
+mode hits 100%; the gap comes entirely from paraphrased queries. The re-ranker runs
+the `ms-marco-MiniLM-L6-v2` cross-encoder through onnxruntime instead of
+sentence-transformers: identical scores (max difference 0.00001), 141 ms vs 173 ms
+p50 for 10 pairs, 200 MB vs 526 MB resident memory, 1.6 s vs 27.7 s load
+(`eval/reranker_cpu_benchmark.txt`).
+
+### Reliability
+
+| Failure mode | Evidence |
+|---|---|
+| Malformed structured output (`json_validate_failed`, `output_parse_failed`) surfaced as HTTP 500 | 3/441 requests across runs A, B and C (`eval/errors_before_retry_change.txt`); both codes are now retried like `tool_use_failed` |
+| Groq free-tier limits (200K tokens per org per model per day) | Key pool with per-(key, model) cooldown and failover on 429; an exhausted pool returns 503 with `Retry-After` instead of 500 |
+
+## Running it
+
+### With Docker
+
+```
+cp .env.example .env              # add GROQ_API_KEY (more keys optional)
+docker compose up --build
+# UI   http://localhost:8080
+# API  http://localhost:8000   (docs at /docs, metrics at /metrics)
+```
+
+Three containers: backend (FastAPI plus the MCP server as a stdio subprocess in the
+same container, non-root user, knowledge base embedded at build time, healthcheck on
+`/health`), frontend (static build served by unprivileged nginx) and Redis.
+`docker build`, `docker compose up` and `/health` were verified on Docker 29.4.3
+(`eval/docker_verification.txt`). Host ports can be changed with `BACKEND_PORT` and
+`FRONTEND_PORT`.
+
+### Local development
 
 ```
 python -m venv venv
-venv\Scripts\pip install -r requirements.txt
-# add GROQ_API_KEY (and optionally GEMINI_API_KEY) to .env
-venv\Scripts\python -m app.ingest        # embed data/kb/*.md into local ChromaDB
+venv\Scripts\pip install -r requirements-dev.txt
+copy .env.example .env               # add GROQ_API_KEY
+venv\Scripts\python -m app.ingest    # embed data/kb/*.md into local ChromaDB
 venv\Scripts\python -m uvicorn app.main:app --reload
-```
 
-## Frontend
-
-```
 cd frontend
 npm install
-npm run dev        # Vite dev server on http://localhost:5173
+npm run dev                          # http://localhost:5173
 ```
 
-Minimal React + Vite + Tailwind SPA (`frontend/src/App.jsx`, one component,
-`useState`-only, no routing). Submits a ticket to the FastAPI backend at
-`http://127.0.0.1:8000/ticket` and renders the raw response, the agent trace
-as a timeline, and a final result card that branches on `final_action`. The
-backend's CORS config (`app/main.py`) whitelists this dev server's origin
-(`localhost:5173` / `127.0.0.1:5173`) explicitly.
+Without `REDIS_URL` sessions live in process memory; without
+`TRIAGEFORGE_API_KEYS` auth is off and the rate limit applies per IP. Every setting
+is listed in `.env.example`.
 
-## Tests
+### API
 
-```
-venv\Scripts\pip install -r requirements-dev.txt
-venv\Scripts\python -m pytest
-```
+| Endpoint | Purpose |
+|---|---|
+| `POST /ticket` | Triage one ticket, return `TriageResponse` (plus optional `request_id`, `latency_ms`, `token_usage`, `transport_retries`) |
+| `POST /ticket/stream` | Same pipeline as Server-Sent Events: each agent step as it completes, then the final response |
+| `GET /health` | Liveness |
+| `GET /metrics` | Prometheus counters for final actions, transport errors and retries, guardrail flags, rate limits, tokens, and latency histograms |
 
-Unit tests under `tests/` cover schemas, PII redaction, the injection and output-leak
-heuristics, transport-retry scoping, memory, retrieval confidence math and the
-orchestrator's trace-to-`final_action` mapping. Every LLM call is mocked, so no API
-key is needed. CI runs the same suite on every push and pull request.
+Errors: 401 missing or wrong `X-API-Key`, 429 over the per-key rate limit, 422 for a
+message over `MAX_USER_MESSAGE_CHARS` (default 4000), 503 when the LLM provider's
+limits are exhausted.
 
-## Evaluation
+### Tests and eval
 
 ```
-venv\Scripts\python -m eval.run_eval
+venv\Scripts\python -m pytest                       # 134 pass, 1 skipped; every LLM call mocked
+venv\Scripts\python -m eval.run_eval --runs 3       # needs a running server
+venv\Scripts\python -m eval.retrieval_eval          # offline, no LLM calls
 ```
 
-Runs `eval/test_tickets.json` (16 hand-crafted tickets, spread across categories/
-urgency, plus 3 adversarial: injection, PII, ambiguous) against a live server and
-prints expected-vs-actual routing, category, and guardrail behavior.
+CI runs the unit tests on every push and pull request. Run the server with
+`CLASSIFY_CACHE_SIZE=0` when evaluating, so repeated runs of a ticket are
+independent samples.
+
+## Known Limitations
+
+- **Small, self-written test sets.** 53 + 20 tickets and 72 retrieval queries, all
+  hand-written for this project. They compare configurations fairly; they are not a
+  benchmark of real support traffic.
+- **Under-escalation trade-off.** The urgency calibration that fixed
+  over-escalation lets a few urgent tickets through as auto-resolved (7.5% of
+  ticket-runs in run C). The orchestrator also occasionally ignores its own
+  "urgency 4 or more means escalate" rule.
+- **Free-tier rate limits shape everything.** Groq's free tier allows 200K tokens
+  per model per day per account; a 53x3 eval needs most of that across several
+  keys, and long runs are paced by the limit refilling.
+- **Guardrails are heuristics.** Regex PII redaction misses many formats, and the
+  injection regex has a known false positive kept in the eval on purpose
+  (`adversarial_fp_you_are_now`: "you are now charging me twice").
+- **Not deployed.** A Render blueprint (`render.yaml`) and manual steps
+  (`docs/DEPLOY_RENDER.md`) are included, but nothing is deployed from this repo.
 
 ## MCP Integration
 
