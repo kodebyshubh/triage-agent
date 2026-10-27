@@ -1,0 +1,63 @@
+eval/final_vs_c_ticket_diff.txt
+  s_15a9959e77d786::t_9fa1191cff1efc 1-12
+eval/final_regression_merged.txt
+  s_15a9959e77d786::t_4883b05305d390 1-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "11fa41e299ca625b2f5d7ea8a2637251769c696b",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:d65f65b6d11282d6ea78b804fb83799659f9b633a507ccb768f155efcfdff9af",
+      "total_additions": 108,
+      "total_deletions": 0,
+      "accepted_lines": 225,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:d65f65b6d11282d6ea78b804fb83799659f9b633a507ccb768f155efcfdff9af",
+      "stats": {
+        "total_additions": 108,
+        "total_deletions": 0,
+        "accepted_lines": 225,
+        "overriden_lines": 0,
+        "files": {
+          ".claude/llm_queue.sh": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 117,
+            "overriden_lines": 0
+          },
+          "eval/final_regression_merged.txt": {
+            "total_additions": 96,
+            "total_deletions": 0,
+            "accepted_lines": 96,
+            "overriden_lines": 0
+          },
+          "eval/final_vs_c_ticket_diff.txt": {
+            "total_additions": 12,
+            "total_deletions": 0,
+            "accepted_lines": 12,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
