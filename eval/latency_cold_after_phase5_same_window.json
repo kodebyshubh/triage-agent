@@ -1,0 +1,152 @@
+{
+  "label": "cold_after_phase5_same_window",
+  "rows": [
+    {
+      "pass": 1,
+      "ticket_id": "billing_refund",
+      "final_action": "auto_resolved",
+      "latency_ms": 5772.6,
+      "classifier_ms": 704.1
+    },
+    {
+      "pass": 1,
+      "ticket_id": "billing_duplicate_charge",
+      "final_action": "auto_resolved",
+      "latency_ms": 5086.9,
+      "classifier_ms": 422.7
+    },
+    {
+      "pass": 1,
+      "ticket_id": "billing_invoice_request",
+      "final_action": "auto_resolved",
+      "latency_ms": 5195.8,
+      "classifier_ms": 483.2
+    },
+    {
+      "pass": 1,
+      "ticket_id": "billing_update_card",
+      "final_action": "auto_resolved",
+      "latency_ms": 7303.0,
+      "classifier_ms": 581.3
+    },
+    {
+      "pass": 1,
+      "ticket_id": "billing_unauthorized_charges",
+      "final_action": "escalated",
+      "latency_ms": 4603.4,
+      "classifier_ms": 896.8
+    },
+    {
+      "pass": 1,
+      "ticket_id": "technical_crash",
+      "final_action": "auto_resolved",
+      "latency_ms": 7465.0,
+      "classifier_ms": 1160.6
+    },
+    {
+      "pass": 1,
+      "ticket_id": "technical_timeout",
+      "final_action": "auto_resolved",
+      "latency_ms": 4403.7,
+      "classifier_ms": 247.7
+    },
+    {
+      "pass": 1,
+      "ticket_id": "technical_2fa_reset",
+      "final_action": "auto_resolved",
+      "latency_ms": 5245.7,
+      "classifier_ms": 497.9
+    },
+    {
+      "pass": 1,
+      "ticket_id": "technical_sync_missing_notes",
+      "final_action": "auto_resolved",
+      "latency_ms": 7426.5,
+      "classifier_ms": 538.1
+    },
+    {
+      "pass": 1,
+      "ticket_id": "technical_urgent_data_loss",
+      "final_action": "escalated",
+      "latency_ms": 6406.2,
+      "classifier_ms": 511.7
+    },
+    {
+      "pass": 1,
+      "ticket_id": "technical_team_outage",
+      "final_action": "escalated",
+      "latency_ms": 3932.7,
+      "classifier_ms": 396.7
+    },
+    {
+      "pass": 1,
+      "ticket_id": "account_email_change",
+      "final_action": "auto_resolved",
+      "latency_ms": 4447.8,
+      "classifier_ms": 595.1
+    },
+    {
+      "pass": 1,
+      "ticket_id": "account_forgot_password",
+      "final_action": "auto_resolved",
+      "latency_ms": 6228.7,
+      "classifier_ms": 584.8
+    },
+    {
+      "pass": 1,
+      "ticket_id": "account_delete",
+      "final_action": "auto_resolved",
+      "latency_ms": 5750.5,
+      "classifier_ms": 531.6
+    },
+    {
+      "pass": 1,
+      "ticket_id": "account_undo_deletion",
+      "final_action": "auto_resolved",
+      "latency_ms": 5309.9,
+      "classifier_ms": 512.6
+    },
+    {
+      "pass": 1,
+      "ticket_id": "account_merge_calm",
+      "final_action": "auto_resolved",
+      "latency_ms": 9398.2,
+      "classifier_ms": 2778.4
+    },
+    {
+      "pass": 1,
+      "ticket_id": "account_hacked",
+      "final_action": "escalated",
+      "latency_ms": 6983.1,
+      "classifier_ms": 1457.1
+    },
+    {
+      "pass": 1,
+      "ticket_id": "calib_billing_refund_annoyed",
+      "final_action": "auto_resolved",
+      "latency_ms": 8124.3,
+      "classifier_ms": 828.6
+    },
+    {
+      "pass": 1,
+      "ticket_id": "calib_technical_crash_upset",
+      "final_action": "auto_resolved",
+      "latency_ms": 5875.9,
+      "classifier_ms": 714.4
+    },
+    {
+      "pass": 1,
+      "ticket_id": "other_reseller_partnership",
+      "final_action": "escalated",
+      "latency_ms": 9578.4,
+      "classifier_ms": 364.2
+    }
+  ],
+  "rate_limited_429s": 0,
+  "summary": [
+    "Latency benchmark: cold_after_phase5_same_window",
+    "20 different tickets, sequential, server-reported latency_ms",
+    "  cold (first time each message) n=20  p50    5876 ms   p95    9398 ms   mean    6227 ms   classifier step p50    581 ms (n=20)",
+    "Groq 429s during the run: 0"
+  ]
+}

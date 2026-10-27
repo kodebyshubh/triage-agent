@@ -1,0 +1,12 @@
+Tickets whose routing outcome differs between run C (Phase 2 stack, 12-chunk KB)
+and the final regression (final stack, 60-chunk KB), 53 tickets x 3 runs each.
+ok = runs with the expected action; urgency from the classifier step.
+
+account_merge_urgent               exp=esc   C: http/auto/auto   ok 0/3  urg -/4/4  final: inc-lookup/esc/esc     ok 2/3  urg 4/4/4
+billing_chargeback_threat          exp=esc   C: esc/esc/esc      ok 3/3  urg 3/3/3  final: auto/auto/auto         ok 0/3  urg 3/3/3
+account_hacked                     exp=esc   C: auto/esc/esc     ok 2/3  urg 5/5/5  final: esc/esc/esc            ok 3/3  urg 5/5/5
+account_locked_demo                exp=esc   C: esc/esc/esc      ok 3/3  urg 4/4/4  final: auto/esc/esc           ok 2/3  urg 4/4/4
+ambiguous_anyone_there             exp=esc   C: esc/esc/esc      ok 3/3  urg 1/1/1  final: auto/auto/auto         ok 0/3  urg 1/1/1
+mcp_lookup_suspended_launch        exp=esc   C: esc/esc/esc      ok 3/3  urg 4/4/4  final: auto/esc/esc           ok 2/3  urg 4/4/4
+
+Total correct: C 140/159, final 135/159
