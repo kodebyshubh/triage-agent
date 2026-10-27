@@ -1,0 +1,58 @@
+README.md
+  s_15a9959e77d786::t_977974f9692929 122-124
+  s_15a9959e77d786::t_d20e770f40ca37 243-246
+  s_15a9959e77d786::t_88580ef723efa6 64-76
+  s_15a9959e77d786::t_ad2cd258d114cc 146-165,170
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "65c603274f8afc1b1481f1677732326e61647edf",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:418c765dd32c149bd204e3425ad7fe1cdc8152d3cace745e9e8ac9e5a5f05397",
+      "total_additions": 41,
+      "total_deletions": 2,
+      "accepted_lines": 158,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:418c765dd32c149bd204e3425ad7fe1cdc8152d3cace745e9e8ac9e5a5f05397",
+      "stats": {
+        "total_additions": 41,
+        "total_deletions": 2,
+        "accepted_lines": 158,
+        "overriden_lines": 0,
+        "files": {
+          ".claude/llm_queue.sh": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 117,
+            "overriden_lines": 0
+          },
+          "README.md": {
+            "total_additions": 41,
+            "total_deletions": 2,
+            "accepted_lines": 41,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
