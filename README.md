@@ -185,8 +185,10 @@ Three containers: backend (FastAPI plus the MCP server as a stdio subprocess in 
 same container, non-root user, knowledge base embedded at build time, healthcheck on
 `/health`), frontend (static build served by unprivileged nginx) and Redis.
 `docker build`, `docker compose up` and `/health` were verified on Docker 29.4.3
-(`eval/docker_verification.txt`). Host ports can be changed with `BACKEND_PORT` and
-`FRONTEND_PORT`.
+(`eval/docker_verification.txt`), and a real ticket was sent end to end through
+the containers: auto-resolved with a KB citation, session stored in Redis with a
+24 h TTL, backend at 200 MiB (`eval/docker_e2e_verification.txt`). Host ports can
+be changed with `BACKEND_PORT` and `FRONTEND_PORT`.
 
 ### Local development
 

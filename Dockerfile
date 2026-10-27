@@ -21,8 +21,17 @@ RUN chown app:app /app
 
 USER app
 
-# Builds chroma_db/ and pulls ChromaDB's default embedding model into the image,
-# so the container starts without downloading anything.
+# Pull ChromaDB's default embedding model (about 80 MB) in its own layer, with
+# retries: the download can time out on a slow link, and once it succeeds the
+# layer is cached, so later builds and ingest never fetch it again.
+RUN for attempt in 1 2 3 4 5; do \
+      python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as E; E()(['warm up'])" \
+      && break; \
+      echo "embedding model download failed (attempt $attempt), retrying"; sleep 10; \
+    done; \
+    python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as E; E()(['check'])"
+
+# Builds chroma_db/, so the container starts without embedding anything.
 RUN python -m app.ingest
 
 # The cross-encoder is only used when RETRIEVAL_MODE=hybrid_rerank (not the

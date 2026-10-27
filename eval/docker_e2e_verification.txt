@@ -1,0 +1,23 @@
+Docker end-to-end check, 2026-10-28 02:23 IST, main @ 65c6032
+
+$ docker compose -p tfcheck ps
+backend  running  healthy
+frontend  running  starting
+redis  running  healthy
+
+$ curl http://localhost:8100/health
+  {"status":"ok"}
+
+$ POST /ticket through the containers
+  final_action: auto_resolved
+  trace: ['Classifier', 'Retriever+Responder']
+  citations: ['technical.md']
+  latency_ms: 4672.2
+  request_id: e63109bd72d7423d804c52aed4ad3e74
+
+$ redis-cli KEYS 'triageforge:session:*'
+  triageforge:session:docker-e2e
+$ redis-cli TTL triageforge:session:docker-e2e
+  86399
+
+Backend memory: 199.8MiB / 7.357GiB
