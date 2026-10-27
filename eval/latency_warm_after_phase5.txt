@@ -1,0 +1,5 @@
+Latency benchmark: warm_after_phase5
+20 different tickets, sequential, server-reported latency_ms
+  cold (first time each message) n=20  p50    5170 ms   p95    7319 ms   mean    5441 ms   classifier step p50    531 ms (n=20)
+  warm (identical repeat)        n=20  p50    5311 ms   p95    6877 ms   mean    5028 ms   classifier step p50      0 ms (n=20)
+Groq 429s during the run: 0

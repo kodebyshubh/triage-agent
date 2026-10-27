@@ -1,0 +1,4 @@
+Latency benchmark: cold_after_phase5
+20 different tickets, sequential, server-reported latency_ms
+  cold (first time each message) n=20  p50    6658 ms   p95    8392 ms   mean    6644 ms   classifier step p50    536 ms (n=20)
+Groq 429s during the run: 0
