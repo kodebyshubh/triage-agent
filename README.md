@@ -61,6 +61,19 @@ scores.
 | **Run C, few-shot prompt** | 53 tickets, x3 | **mean 88.1% (sd 1.1, range 86.8 to 88.7)** | `eval/phase2_c_fewshot_v2.txt` |
 | Held-out, old prompt | 20 new tickets, x3 | mean 81.7% (sd 2.9) | `eval/phase2_heldout_old_prompt.txt` |
 | **Held-out, few-shot prompt** | 20 new tickets, x3 | **mean 91.7% (sd 2.9, range 90 to 95)** | `eval/phase2_heldout_fewshot_v2_merged.txt` |
+| Final stack (60-chunk KB and every later phase) | 53 tickets, x3 | mean 84.9% (sd 3.3, range 81.1 to 86.8) | `eval/final_regression_merged.txt` |
+
+The last row is the system as shipped. It is 5 ticket-runs below run C (135/159 vs
+140/159), and the per-ticket diff (`eval/final_vs_c_ticket_diff.txt`) shows where:
+two tickets that run C escalated 3/3 are now auto-resolved 3/3,
+`billing_chargeback_threat` (urgency 3) and `ambiguous_anyone_there` (urgency 1).
+Both sit below the urgency-4 escalation threshold, so in run C their only path to
+escalation was the drafted reply's confidence falling below 0.4; the classifier's
+urgency is identical in both runs. The likely cause is the Phase 3 knowledge base
+growth (12 to 60 chunks), which now holds close matches (for example "How do I
+contact support"), so the draft clears the threshold. The trace does not record the
+draft confidence, so this is an inference from the routing rules, not a
+measurement. The other differences are one or two run swings in both directions.
 
 The few-shot prompt was developed while looking at the 53-ticket set, so the
 held-out set is the cleaner generalization number: its 20 tickets were written after
@@ -106,7 +119,9 @@ Run history, kept rather than tidied away:
 
 | Change | Routing match | Source | Decision |
 |---|---|---|---|
-| Orchestrator on `qwen/qwen3.8-27b` | 47/53 (88.7%) | `eval/phase2_screen_orch_qwen.txt` | Inside run C's range; not clearly better, not adopted |
+| Orchestrator on `qwen/qwen3.8-27b` (Phase 2 stack) | 47/53 (88.7%) | `eval/phase2_screen_orch_qwen.txt` | Inside run C's range; not clearly better, not adopted |
+| Classifier on `openai/gpt-oss-120b` (final stack) | 45/53 (84.9%) | `eval/phase2_screen_classifier_120b.txt` | Final-stack run 1 was 43/53; within single-run noise, not adopted |
+| Orchestrator on `openai/gpt-oss-120b` (final stack) | 4/53; 48/53 ended `escalated_due_to_error` after 96 `tool_use_failed` retries | `eval/phase2_screen_orch_120b.txt` | Unusable here: its tool calls fail Groq's schema validation for the single-string `Tool.from_function` argument |
 
 Default stays `openai/gpt-oss-20b` for every role. Any role can be switched with
 `MODEL_<ROLE>` (`classifier`, `responder`, `escalator`, `orchestrator`, `guardrail`).
@@ -128,11 +143,31 @@ sentence-transformers: identical scores (max difference 0.00001), 141 ms vs 173 
 p50 for 10 pairs, 200 MB vs 526 MB resident memory, 1.6 s vs 27.7 s load
 (`eval/reranker_cpu_benchmark.txt`).
 
+### Latency (Phase 5 changes), `eval/latency_*.txt`
+
+Sequential requests, server-reported end-to-end latency, 20 different tickets, no
+Groq rate-limit waits in any run listed here.
+
+| Run | n | p50 | p95 | Classifier step p50 |
+|---|---|---|---|---|
+| Cold, before Phase 5 | 20 | 5819 ms | 9190 ms | 549 ms |
+| Cold, after Phase 5 (cache disabled) | 20 | 5876 ms | 9398 ms | 581 ms |
+| Warm, after Phase 5 (identical repeat, cache on) | 20 | 5311 ms | 6877 ms | 0 ms |
+
+The before and after cold runs were measured back to back
+(`..._same_window.txt`): no measurable change, which is expected, since the
+concurrency changes only overlap cheap work with the input guardrail's LLM call.
+The cache removes the classifier call on an identical message (about 0.55 s), which
+is smaller than Groq's own run-to-run variation in total latency. An earlier pair
+measured six days apart (`latency_cold_before_phase5.txt` vs
+`latency_cold_after_phase5.txt`: 4333 vs 6658 ms p50) differed mostly because of
+provider speed on the day, which is why the same-window pair is the one reported.
+
 ### Reliability
 
 | Failure mode | Evidence |
 |---|---|
-| Malformed structured output (`json_validate_failed`, `output_parse_failed`) surfaced as HTTP 500 | 3/441 requests across runs A, B and C (`eval/errors_before_retry_change.txt`); both codes are now retried like `tool_use_failed` |
+| Malformed structured output (`json_validate_failed`, `output_parse_failed`) surfaced as HTTP 500 | Before: 3/441 requests across runs A, B and C (`eval/errors_before_retry_change.txt`). Both codes are now retried like `tool_use_failed`; the final-stack regression had 0 HTTP errors and 0 retries in 159 requests (`eval/final_regression_merged.txt`), so the new retry path has not yet been exercised by a live failure |
 | Groq free-tier limits (200K tokens per org per model per day) | Key pool with per-(key, model) cooldown and failover on 429; an exhausted pool returns 503 with `Retry-After` instead of 500 |
 
 ## Running it
@@ -205,6 +240,10 @@ independent samples.
   over-escalation lets a few urgent tickets through as auto-resolved (7.5% of
   ticket-runs in run C). The orchestrator also occasionally ignores its own
   "urgency 4 or more means escalate" rule.
+- **A bigger knowledge base made escalation harder to trigger.** Low-urgency
+  tickets that should escalate relied on a weak retrieval match; with 60 chunks,
+  two of them now get a confident draft and are auto-resolved (see the final-stack
+  row above). A routing eval after the KB change would have caught this earlier.
 - **Free-tier rate limits shape everything.** Groq's free tier allows 200K tokens
   per model per day per account; a 53x3 eval needs most of that across several
   keys, and long runs are paced by the limit refilling.
