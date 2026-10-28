@@ -1,4 +1,4 @@
 -r requirements.txt
-pytest
-psutil
-fakeredis
+pytest==9.1.1
+psutil==7.2.2
+fakeredis==2.40.0

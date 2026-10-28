@@ -1,12 +1,14 @@
 # Render Blueprint: free web service (backend, Docker), free static site
 # (frontend) and a free Key Value instance (Redis-compatible) for sessions.
 # Secrets use sync: false, so Render asks for them when the Blueprint is created;
-# nothing secret lives in this file.
+# nothing secret lives in this file. Step-by-step guide: docs/DEPLOY_RENDER.md
 services:
   - type: web
     name: triageforge-api
     runtime: docker
     plan: free
+    region: singapore # closest Render region to India; must match the Key Value below
+    branch: main
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health
@@ -23,6 +25,12 @@ services:
         value: triageforge
       - key: RATE_LIMIT_PER_MIN
         value: "30"
+      # A visitor should get a fast 503 when every Groq key is rate-limited,
+      # not wait the 300 s default.
+      - key: GROQ_MAX_RATE_LIMIT_WAIT_S
+        value: "60"
+      - key: LOG_LEVEL
+        value: INFO
       - key: REDIS_URL
         fromService:
           type: keyvalue
@@ -32,6 +40,7 @@ services:
   - type: web
     name: triageforge-ui
     runtime: static
+    branch: main
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
@@ -48,5 +57,6 @@ services:
   - type: keyvalue
     name: triageforge-sessions
     plan: free
+    region: singapore
     maxmemoryPolicy: allkeys-lru
     ipAllowList: [] # internal connections only

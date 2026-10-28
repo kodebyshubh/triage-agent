@@ -13,23 +13,21 @@ WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-
-COPY --chown=app:app app ./app
-COPY --chown=app:app mcp_server ./mcp_server
-COPY --chown=app:app data ./data
 RUN chown app:app /app
 
 USER app
 
-# Pull ChromaDB's default embedding model (about 80 MB) in its own layer, with
-# retries: the download can time out on a slow link, and once it succeeds the
-# layer is cached, so later builds and ingest never fetch it again.
-RUN for attempt in 1 2 3 4 5; do \
-      python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as E; E()(['warm up'])" \
-      && break; \
-      echo "embedding model download failed (attempt $attempt), retrying"; sleep 10; \
-    done; \
+# Pull ChromaDB's default embedding model (about 80 MB) before copying app code,
+# so this layer is cached across code changes. The script resumes partial
+# downloads (one flaky link used to fail whole builds); the second line makes
+# Chroma verify and extract the archive.
+COPY --chown=app:app scripts/fetch_embedding_model.py ./scripts/
+RUN python scripts/fetch_embedding_model.py && \
     python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as E; E()(['check'])"
+
+COPY --chown=app:app app ./app
+COPY --chown=app:app mcp_server ./mcp_server
+COPY --chown=app:app data ./data
 
 # Builds chroma_db/, so the container starts without embedding anything.
 RUN python -m app.ingest

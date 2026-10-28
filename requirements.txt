@@ -1,14 +1,35 @@
-fastapi
-uvicorn
-pydantic
-langchain
-langchain-groq
-langchain-google-genai
-chromadb
-python-dotenv
-requests
-mcp
-langchain-mcp-adapters
-rank_bm25
-prometheus_client
-redis
+# Pinned to the versions every test, eval and the Docker end-to-end check ran on.
+# Upgrade deliberately: bump, run pytest + a Docker build, then commit.
+
+# API
+fastapi==0.139.0
+uvicorn==0.51.0
+pydantic==2.13.4
+python-dotenv==1.2.2
+httpx==0.28.1
+
+# Agents and LLM providers
+langchain==1.3.13
+langchain-core==1.4.9
+langgraph==1.2.9
+langchain-groq==1.1.3
+groq==0.37.1
+langchain-google-genai==4.2.7
+
+# MCP
+mcp==1.28.1
+langchain-mcp-adapters==0.3.0
+
+# Retrieval
+chromadb==1.5.9
+rank_bm25==0.2.2
+onnxruntime==1.27.0
+tokenizers==0.23.1
+numpy==2.5.1
+
+# Production basics
+redis==8.1.0
+prometheus_client==0.26.0
+
+# Eval scripts
+requests==2.34.2

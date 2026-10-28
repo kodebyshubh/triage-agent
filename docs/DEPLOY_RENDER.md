@@ -14,8 +14,15 @@ each on a free plan:
 | `triageforge-ui` | Static site (Vite build of `frontend/`) | free |
 | `triageforge-sessions` | Key Value (Redis-compatible), internal only | free |
 
-The backend container was measured at 249 MiB resident after a request
-(`eval/docker_verification.txt`), which fits the free instance's 512 MB.
+The API and Key Value run in `singapore` (the closest Render region to India).
+They must share a region to talk over Render's private network; to move them,
+change both `region` fields in `render.yaml`. The static site is served from
+Render's CDN and has no region. Every service deploys from the `main` branch.
+
+The backend container was measured at 200 to 249 MiB resident after a request
+(`eval/docker_verification.txt`, `eval/docker_e2e_verification.txt`), which fits
+the free instance's 512 MB. Dependencies in `requirements.txt` are pinned to the
+versions every test and eval ran on, so a Render build installs exactly those.
 
 Free-tier behaviour to expect:
 - The free web service spins down after a period without traffic; the first request
@@ -24,6 +31,11 @@ Free-tier behaviour to expect:
 - Free Key Value has no persistence. Sessions already expire after `SESSION_TTL_S`
   (24 h), so a restart only drops in-flight conversations.
 - Groq's free tier still applies: 200K tokens per model per day per Groq account.
+  The blueprint sets `GROQ_MAX_RATE_LIMIT_WAIT_S=60`, so when every key is
+  rate-limited a visitor gets a 503 within about a minute instead of a 5 minute wait.
+- The first API build downloads ChromaDB's embedding model (about 80 MB). It uses
+  `scripts/fetch_embedding_model.py`, which resumes a broken download instead of
+  restarting, so a slow link makes the build slower, not failed.
 
 ## Steps
 
