@@ -1,0 +1,120 @@
+scripts/fetch_embedding_model.py
+  s_15a9959e77d786::t_d1c5b6c7a50645 1-66
+Dockerfile
+  s_15a9959e77d786::t_edd44b5008a97f 20-25,28-30
+requirements.txt
+  s_15a9959e77d786::t_55c46ef122fc17 1-35
+render.yaml
+  s_15a9959e77d786::t_7600aa6a1a6688 4,10-11,28-33,43,60
+docs/DEPLOY_RENDER.md
+  s_15a9959e77d786::t_741dd303cafead 17-25
+  s_15a9959e77d786::t_5edda69aa48cc8 34-38
+requirements-dev.txt
+  s_15a9959e77d786::t_2668fb68d002f5 2-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "2.2.0",
+  "base_commit_sha": "ade4a0419bb9117ba17e93cfe2e5b8db7c411793",
+  "branch": "main",
+  "prompts": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:e14e93f2f00a4179e91d503a8098ac817dec7ccb5d3c4bb9724357a1f7dd6b0b",
+      "total_additions": 1996,
+      "total_deletions": 36,
+      "accepted_lines": 256,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_15a9959e77d786": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9fb74e01-b3de-48cb-b21a-19ed15ac5126",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "imbohra777 <shubhbohra44@gmail.com>",
+      "messages_url": "cas:e14e93f2f00a4179e91d503a8098ac817dec7ccb5d3c4bb9724357a1f7dd6b0b",
+      "stats": {
+        "total_additions": 1996,
+        "total_deletions": 36,
+        "accepted_lines": 256,
+        "overriden_lines": 0,
+        "files": {
+          ".claude/llm_queue.sh": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 117,
+            "overriden_lines": 0
+          },
+          "Dockerfile": {
+            "total_additions": 10,
+            "total_deletions": 12,
+            "accepted_lines": 10,
+            "overriden_lines": 0
+          },
+          "docs/DEPLOY_RENDER.md": {
+            "total_additions": 14,
+            "total_deletions": 2,
+            "accepted_lines": 14,
+            "overriden_lines": 0
+          },
+          "render.yaml": {
+            "total_additions": 11,
+            "total_deletions": 1,
+            "accepted_lines": 11,
+            "overriden_lines": 0
+          },
+          "requirements-dev.txt": {
+            "total_additions": 3,
+            "total_deletions": 3,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          },
+          "requirements.txt": {
+            "total_additions": 35,
+            "total_deletions": 14,
+            "accepted_lines": 35,
+            "overriden_lines": 0
+          },
+          "scripts/fetch_embedding_model.py": {
+            "total_additions": 66,
+            "total_deletions": 0,
+            "accepted_lines": 66,
+            "overriden_lines": 0
+          },
+          "zdnd/_pd_part1.md": {
+            "total_additions": 432,
+            "total_deletions": 0,
+            "accepted_lines": 0,
+            "overriden_lines": 0
+          },
+          "zdnd/_pd_part2.md": {
+            "total_additions": 681,
+            "total_deletions": 0,
+            "accepted_lines": 0,
+            "overriden_lines": 0
+          },
+          "zdnd/_pd_part3.md": {
+            "total_additions": 512,
+            "total_deletions": 4,
+            "accepted_lines": 0,
+            "overriden_lines": 0
+          },
+          "zdnd/_pd_part4.md": {
+            "total_additions": 232,
+            "total_deletions": 0,
+            "accepted_lines": 0,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
